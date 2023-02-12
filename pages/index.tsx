@@ -1,7 +1,9 @@
 import { Inter } from "@next/font/google";
+import styles from '@/styles/Home.module.css'
 import Head from "next/head";
-import Button from '@mui/material/Button';
-import { Box, Checkbox, Container, FormControl, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, TextField } from "@mui/material";
+import Footer from "@/comps/Footer";
+import Navbar from "@/comps/NavBar";
+import { Box, Link, Checkbox, Container, FormControl, Button, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, TextField } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2';
 import { styled } from '@mui/material/styles';
 import { useState } from "react";
@@ -18,14 +20,15 @@ export default function Home() {
 
     return (
         <>
-            <Head>
-                <title>Student Manager</title>
-                <meta name="description" content="Student Manager app" />
-                <meta name="viewport" content="initial-scale=1, width=device-width" />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-            <main>
-                <Box p={3}>
+            <div>
+              <h1>Homepage</h1>
+              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus animi impedit suscipit architecto, odio inventore nostrum non neque dicta. Quam magni accusantium culpa distinctio tempore iure accusamus, dolorem nobis odit.</p>
+              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus animi impedit suscipit architecto, odio inventore nostrum non neque dicta. Quam magni accusantium culpa distinctio tempore iure accusamus, dolorem nobis odit.</p>
+              <Link href="/students/">
+                <a>See Student Listing</a>
+              </Link>
+            </div>
+                {/* <Box p={3}>
                     <h1 className="text-3xl font-bold underline">Hello world!</h1>
                     <Button variant="contained">Hello World</Button>
                     <Button variant="text">Text</Button>
@@ -85,8 +88,20 @@ export default function Home() {
                             </Grid>
                         </Grid>
                     </Box>
-                </Box>
-            </main>
+                    <Box>
+                    <ul>
+                      <li>
+                        <Link href="/">Home</Link>
+                      </li>
+                      <li>
+                        <Link href="">Document</Link>
+                      </li>
+                      <li>
+                        <Link href="/api/hello">Blog Post</Link>
+                      </li>
+                    </ul>
+                    </Box>
+                </Box> */}
         </>
     );
 }
