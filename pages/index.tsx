@@ -1,8 +1,5 @@
 import { Inter } from "@next/font/google";
 import styles from '@/styles/Home.module.css'
-import Head from "next/head";
-import Footer from "@/comps/Footer";
-import Navbar from "@/comps/NavBar";
 import { Box, Link, Checkbox, Container, FormControl, Button, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, TextField } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2';
 import { styled } from '@mui/material/styles';
