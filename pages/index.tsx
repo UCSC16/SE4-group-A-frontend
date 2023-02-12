@@ -18,16 +18,16 @@ export default function Home() {
 
     return (
         <>
-            
+
             <div>
-            <h1 className={styles.title}>Homepage</h1>
-            <p className={styles.text}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus animi impedit suscipit architecto, odio inventore nostrum non neque dicta. Quam magni accusantium culpa distinctio tempore iure accusamus, dolorem nobis odit.</p>
-            <p className={styles.text}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus animi impedit suscipit architecto, odio inventore nostrum non neque dicta. Quam magni accusantium culpa distinctio tempore iure accusamus, dolorem nobis odit.</p>
-            <Link href="/students/">
-                <a className={styles.btn}>See Student Listing</a>
-              </Link>
+                <h1 className={styles.title}>Homepage</h1>
+                <p className={styles.text}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus animi impedit suscipit architecto, odio inventore nostrum non neque dicta. Quam magni accusantium culpa distinctio tempore iure accusamus, dolorem nobis odit.</p>
+                <p className={styles.text}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus animi impedit suscipit architecto, odio inventore nostrum non neque dicta. Quam magni accusantium culpa distinctio tempore iure accusamus, dolorem nobis odit.</p>
+                <Link href="/students/" className={styles.btn}>
+                    See Student Listing
+                </Link>
             </div>
-                {/* <Box p={3}>
+            {/* <Box p={3}>
                     <h1 className="text-3xl font-bold underline">Hello world!</h1>
                     <Button variant="contained">Hello World</Button>
                     <Button variant="text">Text</Button>
