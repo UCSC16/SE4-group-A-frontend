@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import Footer from "./Footer"
-import Navbar from "./NavBar";
+import Navbar from "./Navbar";
 
 type MyComponentProps = React.PropsWithChildren<{}>;
 
