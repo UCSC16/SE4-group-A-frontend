@@ -5,12 +5,12 @@ import Head from "next/head";
 const Navbar = () => {
   return (
     <>
-    {/* <Head>
+    <Head>
         <title>Student Manager</title>
         <meta name="description" content="Student Manager app" />
         <meta name="viewport" content="initial-scale=1, width=device-width" />
         <link rel="icon" href="/favicon.ico" />
-    </Head> */}
+    </Head>
     <nav>
       <div className="logo">
         <h1>Student Manager v1</h1>
