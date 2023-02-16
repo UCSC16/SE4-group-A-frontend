@@ -9,7 +9,9 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
-import { useState } from "react";
+
+import { useState, useRef } from "react";
+import axios from "axios";
 
 interface Column {
     id: 'edit_std' | 'delete_std' | 'student_name' | 'gender' | 'contact_number' | 'address' | 'dob'
@@ -113,6 +115,19 @@ const Students = () => {
         admission_date: new Date(),
         graduation_date: new Date(),
         current_grade: '',
+    })
+    const [newStudent, setNewStudent] = useState({
+        student_name: '',
+        gender: 'female',
+        contact_number: '',
+        address: '',
+        dob: new Date(),
+        guardian_name: '',
+        guardian_contact: '',
+        admission_date: new Date(),
+        graduation_date: new Date(),
+        current_grade: '',
+        showErr: false,
     })
     const [alertMsg, setalertMsg] = useState('')
     const [open, setOpen] = useState(false)
@@ -247,6 +262,54 @@ const Students = () => {
         setdeleteModalOpen(false)
     }
 
+    const newName = useRef(null);
+
+    const createStudent = () => {
+        setNewStudent({...newStudent, showErr: false})
+        //validation
+        if (newStudent.student_name === '') {
+            setNewStudent({...newStudent, showErr: true})
+        }
+        else if (newStudent.gender === '') {
+            setNewStudent({...newStudent, showErr: true})
+            console.log(newStudent.gender)
+        }
+        else if (newStudent.contact_number === '') {
+            setNewStudent({...newStudent, showErr: true})
+        }
+        else if (newStudent.address === '') {
+            setNewStudent({...newStudent, showErr: true})
+        }
+        else if (newStudent.current_grade === '') {
+            setNewStudent({...newStudent, showErr: true})
+        } else {
+            //create student
+            console.log(newStudent)
+            const tempstudent = {
+                studentName: newStudent.student_name,
+                gender: newStudent.gender,
+                contactNumber: newStudent.contact_number,
+                address: newStudent.address,
+                dob: newStudent.dob.toISOString,
+                guardianName: newStudent.guardian_name,
+                guardianContact: newStudent.guardian_contact,
+                admissionDate: newStudent.admission_date.toISOString,
+                graduationDate: newStudent.graduation_date.toISOString,
+                currentGrade: newStudent.current_grade,
+            }
+            console.log(tempstudent)
+            console.log(tempstudent.dob.toString())
+            console.log(tempstudent.admissionDate)
+
+            axios.post('http://35.192.153.99:5000/api/students',tempstudent).then((res)=>{
+                console.log(res);
+            }).catch((err)=>{
+                console.log(err);
+            })
+        }
+
+    }
+
     return (
         <div>
             <h1>All Students</h1>
@@ -355,28 +418,38 @@ const Students = () => {
                     </Typography>
                     <Box component={Container} id="modal-modal-description" sx={{ mt: 1, px: 0 }}>
                         <Grid container spacing={2}>
+
                             <Grid xs={12}><p>Personal Information</p></Grid>
                             <Grid md={8}>
                                 <TextField
                                     sx={{ mr: 2, mb: 1, width: '80%' }}
                                     label="Name"
+                                    ref={newName}
                                     id="Name"
                                     size="small"
+                                    error={newStudent.showErr && newStudent.student_name === ''}
+                                    helperText={newStudent.showErr && newStudent.student_name === '' ? "Name Cannot Be Empty." : ''}
+                                    onChange={(e) => { setNewStudent({ ...newStudent, student_name: e.target.value }) }}
                                 />
                                 <TextField
                                     sx={{ mr: 2, mb: 1, width: '80%' }}
                                     label="Contact Number"
                                     id="Contact-Number"
                                     size="small"
+                                    error={newStudent.showErr && newStudent.contact_number === ''}
+                                    helperText={newStudent.showErr && newStudent.contact_number === '' ? "Contact Number Cannot Be Empty." : ''}
+                                    onChange={(e) => { setNewStudent({ ...newStudent, contact_number: e.target.value }) }}
                                 />
                                 <TextField
                                     id="date"
                                     label="Birthday"
                                     type="date"
+                                    size="small"
                                     sx={{ mr: 2, mb: 1, width: '80%' }}
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
+                                    onChange={(e) => { setNewStudent({ ...newStudent, dob: new Date(e.target.value) }) }}
                                 />
                                 <TextField
                                     sx={{ mr: 2, mb: 1, width: '80%' }}
@@ -385,6 +458,9 @@ const Students = () => {
                                     size="small"
                                     multiline
                                     rows={3}
+                                    error={newStudent.showErr && newStudent.address === ''}
+                                    helperText={newStudent.showErr && newStudent.address === '' ? "Address Cannot Be Empty." : ''}
+                                    onChange={(e) => { setNewStudent({ ...newStudent, address: e.target.value }) }}
                                 />
                             </Grid>
                             <Grid md={4}>
@@ -394,11 +470,19 @@ const Students = () => {
                                         aria-labelledby="demo-radio-buttons-group-label"
                                         defaultValue="female"
                                         name="radio-buttons-group"
+                                        
+                                        onChange={(e) => { setNewStudent({ ...newStudent, gender: e.target.value }) }}
                                     >
                                         <FormControlLabel value="female" control={<Radio />} label="Female" />
                                         <FormControlLabel value="male" control={<Radio />} label="Male" />
                                     </RadioGroup>
                                 </FormControl>
+                                {alertVisible &&
+                                    <Alert severity="error">
+                                        <AlertTitle>Error</AlertTitle>
+                                        {alertMsg}
+                                    </Alert>
+                                }
                             </Grid>
                             <Grid md={8}>
                                 <TextField
@@ -406,12 +490,18 @@ const Students = () => {
                                     label="Guardian's Name"
                                     id="Name"
                                     size="small"
+                                    error={newStudent.showErr && newStudent.guardian_name === ''}
+                                    helperText={newStudent.showErr && newStudent.guardian_name === '' ? "Guardian's Name Cannot Be Empty." : ''}
+                                    onChange={(e) => { setNewStudent({ ...newStudent, guardian_name: e.target.value }) }}
                                 />
                                 <TextField
                                     sx={{ mr: 2, mb: 1, width: '80%' }}
                                     label="Guardian's Contact Number"
                                     id="Contact-Number"
                                     size="small"
+                                    error={newStudent.showErr && newStudent.guardian_contact === ''}
+                                    helperText={newStudent.showErr && newStudent.guardian_contact === '' ? "Guardian's Contact Number Cannot Be Empty." : ''}
+                                    onChange={(e) => { setNewStudent({ ...newStudent, guardian_contact: e.target.value }) }}
                                 />
 
                             </Grid>
@@ -429,6 +519,7 @@ const Students = () => {
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
+                                    onChange={(e) => { setNewStudent({ ...newStudent, admission_date: new Date(e.target.value) }) }}
                                 />
                                 <TextField
                                     sx={{ mr: 2, mb: 1, width: '80%' }}
@@ -439,6 +530,7 @@ const Students = () => {
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
+                                    onChange={(e) => { setNewStudent({ ...newStudent, graduation_date: new Date(e.target.value) }) }}
                                 />
                             </Grid>
                             <Grid md={4}>
@@ -448,13 +540,16 @@ const Students = () => {
                                     id="Grade"
                                     size="small"
                                     type={'number'}
+                                    error={newStudent.showErr && newStudent.current_grade === ''}
+                                    helperText={newStudent.showErr && newStudent.current_grade === '' ? "Grade Cannot Be Empty." : ''}
+                                    onChange={(e) => { setNewStudent({ ...newStudent, current_grade: e.target.value }) }}
                                 />
                             </Grid>
                             <Grid md={12} sx={{ display: 'flex', justifyContent: 'end' }}>
                                 <LoadingButton
                                     // size="small"
                                     color="secondary"
-                                    // onClick={handleSubmit}
+                                    onClick={createStudent}
                                     sx={{ marginRight: '7%' }}
                                     loading={false}
                                     loadingPosition="start"
