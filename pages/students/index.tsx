@@ -1,7 +1,83 @@
-import { Box, Container, Modal, Typography, Fab, FormControl, FormLabel, TextField, RadioGroup, FormControlLabel, Radio, Grid } from "@mui/material";
+import { Alert, AlertTitle, Backdrop, Box, Button, Container, Fab, FormControl,  FormControlLabel, 
+    FormLabel, Grid, Modal, Paper, RadioGroup, Radio, Table, TableBody, TableCell, TableContainer,
+    TableHead, TablePagination, TableRow, TextField, Typography } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 import { useState } from "react";
+
+interface Column {
+    id: 'edit_std' | 'delete_std' | 'student_name' | 'gender' | 'contact_number' | 'address' | 'dob' 
+    | 'admission_date' | 'graduation_date' | 'current_grade' | 'guardian_name' | 'guardian_contact';
+    label: string;
+    minWidth?: number;
+    align?: 'right';
+    format?: (value: Date) => string;
+}
+
+interface Student {
+    student_id: string,
+    student_name: string;
+    gender: string;
+    contact_number: string;
+    address: string;
+    dob: Date;
+    admission_date: Date;
+    graduation_date: Date;
+    current_grade: string;
+    guardian_name: string;
+    guardian_contact: string;
+    edit_std: string;
+    delete_std: string;
+} 
+
+const columns: readonly Column[] = [
+    { id: 'edit_std', label: '', minWidth: 30, align: 'right' },
+    { id: 'delete_std', label: '', minWidth: 30, align: 'right' },
+    { id: 'student_name', label: 'Name', minWidth: 100 },
+    { id: 'gender', label: 'Gender', minWidth: 50 },
+    { id: 'contact_number', label: 'Contact Number', minWidth: 100, align: 'right' },
+    { id: 'address', label: 'Address', minWidth: 100, align: 'right' },
+    { id: 'dob', label: 'DOB', minWidth: 100, align: 'right', format: (value: Date) => value.toLocaleString('en-US') },
+    { id: 'admission_date', label: 'Admission Date', minWidth: 100, align: 'right', format: (value: Date) => value.toLocaleString('en-US') },
+    { id: 'graduation_date', label: 'Graduation Date', minWidth: 100, align: 'right', format: (value: Date) => value.toLocaleString('en-US') },
+    { id: 'current_grade', label: 'Current Grade', minWidth: 50, align: 'right' },
+    { id: 'guardian_name', label: 'Guardian Name', minWidth: 100 },
+    { id: 'guardian_contact', label: 'Guardian\'s Contact Number', minWidth: 100, align: 'right' },
+];
+
+function createStudentData(
+    edit_std: string,
+    delete_std: string,
+    student_id: string,
+    student_name: string,
+    gender: string,
+    contact_number: string,
+    address: string,
+    dob: Date,
+    admission_date: Date,
+    graduation_date: Date,
+    current_grade: string,
+    guardian_name: string,
+    guardian_contact: string,
+    ): Student {
+    return { 
+        edit_std, 
+        delete_std,
+        student_id,
+        student_name, 
+        gender, 
+        contact_number, 
+        address,
+        dob, 
+        admission_date, 
+        graduation_date,
+        current_grade, 
+        guardian_name,
+        guardian_contact,
+    };
+}
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -17,20 +93,252 @@ const style = {
 };
 
 const Students = () => {
+    const [students, setStudents] = useState<Student[]>([])
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [selectedStudentId, setselectedStudentId] = useState('')
+    const [selectedStudent, setselectedStudent] = useState({
+        student_id: '',
+        student_name: '',
+        gender: '',
+        contact_number: '',
+        address: '',
+        dob: new Date(),
+        guardian_name: '',
+        guardian_contact: '',
+        admission_date: new Date(),
+        graduation_date: new Date(),
+        current_grade: '',
+    })
+    const [alertMsg, setalertMsg] = useState('')
     const [open, setOpen] = useState(false)
+    const [deleteModalOpen, setdeleteModalOpen] = useState(false)
+    const [editModalOpen, seteditModalOpen] = useState(false)
+    const [alertVisible, setalertVisible] = useState(false)
+
+    const rows = students.map((std) => createStudentData(
+        "Edit student",
+        "Delete student",
+        std.student_id,
+        std.student_name,
+        std.gender,
+        std.contact_number,
+        std.address,
+        std.dob,
+        std.admission_date,
+        std.graduation_date,
+        std.current_grade,
+        std.guardian_name,
+        std.guardian_contact,
+    ))
+
+    // const fetchStudents = async () => {
+        //   api call
+        // state update
+    // };
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
+    const handleChangePage = (event: unknown, newPage: number) => {
+      setPage(newPage);
+    };
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setRowsPerPage(+event.target.value);
+      setPage(0);
+    };
+    
+    const handleDobDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const date: Date = new Date(event.target.value);
+        setselectedStudent({ ...selectedStudent, dob:date })
+    };
+    const handleAdminDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const date: Date = new Date(event.target.value);
+        setselectedStudent({ ...selectedStudent, admission_date:date })
+    };
+    const handleGradDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const date: Date = new Date(event.target.value);
+        setselectedStudent({ ...selectedStudent, graduation_date:date })
+    };
+
+    const updateStudent = async () => {
+        try {
+            if(selectedStudent.student_name==='') {
+                    setalertVisible(true)
+                    setalertMsg('Student name cannot be empty')
+                    setTimeout(() => {
+                    setalertVisible(false)
+                }, 3000);
+            }
+            else if(selectedStudent.gender==='') {
+                    setalertVisible(true)
+                    setalertMsg('Student gender cannot be empty')
+                    setTimeout(() => {
+                    setalertVisible(false)
+                }, 3000);
+            }
+            else if(selectedStudent.contact_number==='') {
+                    setalertVisible(true)
+                    setalertMsg('Student contact number cannot be empty')
+                    setTimeout(() => {
+                    setalertVisible(false)
+                }, 3000);
+            }
+            else if(selectedStudent.address==='') {
+                    setalertVisible(true)
+                    setalertMsg('Student address cannot be empty')
+                    setTimeout(() => {
+                    setalertVisible(false)
+                }, 3000);
+            }
+            else if(!selectedStudent.dob) {
+                    setalertVisible(true)
+                    setalertMsg('Student date of birth cannot be empty')
+                    setTimeout(() => {
+                    setalertVisible(false)
+                }, 3000);
+            }
+            else if(!selectedStudent.admission_date) {
+                    setalertVisible(true)
+                    setalertMsg('Student admission date cannot be empty')
+                    setTimeout(() => {
+                    setalertVisible(false)
+                }, 3000);
+            }
+            else if(selectedStudent.current_grade==='') {
+                    setalertVisible(true)
+                    setalertMsg('Student current grade cannot be empty')
+                    setTimeout(() => {
+                    setalertVisible(false)
+                }, 3000);
+            }
+            else {
+                // await axios.put('https://test.com/api/v2', selectedStudent);
+                students.map((student) => {
+                if(student.student_id === selectedStudent.student_id) {
+                    student.student_id= selectedStudent.student_id,
+                    student.student_name= selectedStudent.student_name,
+                    student.gender= selectedStudent.gender,
+                    student.contact_number= selectedStudent.contact_number,
+                    student.address= selectedStudent.address,
+                    student.dob= selectedStudent.dob,
+                    student.admission_date= selectedStudent.admission_date,
+                    student.graduation_date= selectedStudent.graduation_date,
+                    student.current_grade= selectedStudent.current_grade,
+                    student.guardian_name= selectedStudent.guardian_name,
+                    student.guardian_contact= selectedStudent.guardian_contact
+                }
+                })
+                alert('Data submitted successfully');
+                seteditModalOpen(false)
+            }
+        } catch (error) {
+          console.error(error);
+          alert('An error occurred while submitting the data');
+        }
+    }
+
+    const removeStudent = () => {
+        setStudents(students.filter(student => student.student_id !== selectedStudentId))
+        setdeleteModalOpen(false)
+    }
 
     return (
         <div>
             <h1>All Students</h1>
+
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Fab onClick={handleOpen} color="primary" aria-label="add">
                     <AddIcon />
                 </Fab>
             </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                <Paper sx={{ width: '90%', overflow: 'hidden' }} >
+                    <TableContainer sx={{ maxHeight: 440 }}>
+                        <Table stickyHeader aria-label="sticky table">
+                        <TableHead>
+                            <TableRow>
+                            {columns.map((column) => (
+                            <TableCell
+                                key={column.id}
+                                align='left'
+                                style={{ minWidth: column.minWidth, textAlign: 'center', fontWeight: 'bold' }}
+                            >
+                                {column.label}
+                            </TableCell>
+                            ))}
+                            </TableRow>
+                        </TableHead>
+
+                        <TableBody>
+                            {rows
+                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                .map((row, index) => {
+                                return (
+                                <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                                    <TableCell 
+                                    align={'center'}
+                                    onClick={(e) => {
+                                        seteditModalOpen(true)
+                                        setselectedStudentId(row.student_id)
+                                        setselectedStudent({
+                                            student_id: row.student_id,
+                                            student_name: row.student_name,
+                                            gender: row.gender,
+                                            contact_number: row.contact_number,
+                                            address: row.address,
+                                            dob: row.dob,
+                                            admission_date: row.admission_date,
+                                            graduation_date: row.graduation_date,
+                                            current_grade: row.current_grade,
+                                            guardian_name: row.guardian_name,
+                                            guardian_contact: row.guardian_contact,
+                                        })
+                                    }}
+                                    >
+                                        <BorderColorIcon color="primary" fontSize="small" style={{ cursor: 'pointer' }} />
+                                    </TableCell>
+
+                                    <TableCell 
+                                    align={'center'} 
+                                    onClick={() => {
+                                        setdeleteModalOpen(true)
+                                        setselectedStudentId(row.student_id)
+                                    }}
+                                    >
+                                        <DeleteForeverIcon color="error" fontSize="small" style={{ cursor: 'pointer' }} />
+                                    </TableCell>
+
+                                    <TableCell align={'left'}>{row.student_name}</TableCell>
+                                    <TableCell align={'center'}>{row.gender}</TableCell>
+                                    <TableCell align={'left'}>{row.contact_number}</TableCell>
+                                    <TableCell align={'left'}>{row.address}</TableCell>
+                                    <TableCell align={'left'}>{row.dob.toLocaleDateString()}</TableCell>
+                                    <TableCell align={'left'}>{row.admission_date.toLocaleDateString()}</TableCell>
+                                    <TableCell align={'left'}>{row.graduation_date.toLocaleDateString()}</TableCell>
+                                    <TableCell align={'center'}>{row.current_grade}</TableCell>
+                                    <TableCell align={'center'}>{row.guardian_name}</TableCell>
+                                    <TableCell align={'center'}>{row.guardian_contact}</TableCell>
+                                </TableRow>
+                                );
+                            })}
+                        </TableBody>
+                        </Table>
+                    </TableContainer>
+
+                    <TablePagination
+                        rowsPerPageOptions={[10, 20, 30]}
+                        component="div"
+                        count={rows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Paper>
+            </Box>
+
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -95,7 +403,7 @@ const Students = () => {
                                 
                             </Grid>
                             <Grid xs={4}>
-                                
+
                             </Grid>
                             <Grid xs={12}><p>Acedemic Information</p></Grid>
                             <Grid xs={8}>
@@ -124,6 +432,101 @@ const Students = () => {
                     </Box>
                 </Box>
             </Modal>
+
+            { deleteModalOpen &&
+                <Modal
+                    aria-labelledby="transition-modal-title"
+                    aria-describedby="transition-modal-description"
+                    open={deleteModalOpen}
+                    onClose={() => setdeleteModalOpen(false)}
+                    closeAfterTransition
+                    BackdropComponent={Backdrop}
+                    BackdropProps={{
+                        timeout: 500,
+                    }}
+                >
+                    <Box sx={style}>
+                        <Typography id="transition-modal-title" variant="h6" component="h2">
+                            Delete Student
+                        </Typography>
+                        <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+                            Are you absolutely sure that you want to delete the selected student?
+                        </Typography>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap:'8px', marginTop: '8px' }}>
+                            <Button variant="contained" color="error" onClick={removeStudent}>Yes</Button>
+                            <Button variant="contained" onClick={() => setdeleteModalOpen(false)}>No</Button>
+                        </div>
+                    </Box>
+                </Modal>
+            }
+
+            { editModalOpen &&
+                <Modal
+                    aria-labelledby="transition-modal-title"
+                    aria-describedby="transition-modal-description"
+                    open={editModalOpen}
+                    onClose={() => seteditModalOpen(false)}
+                    closeAfterTransition
+                    BackdropComponent={Backdrop}
+                    BackdropProps={{
+                        timeout: 500,
+                    }}
+                >
+                    <Box sx={style}>
+                        <Typography variant='h4' gutterBottom >
+                            Update Details of {selectedStudent.student_name}
+                        </Typography>
+
+                        { alertVisible &&
+                            <Alert severity="error">
+                                <AlertTitle>Error</AlertTitle>
+                                {alertMsg}
+                            </Alert>
+                        }
+
+                        <Grid margin={2} container direction='column' width='30000' style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
+                            <Box>
+                                <TextField label='Name' value={selectedStudent.student_name} variant='outlined' style={{ width: '75%' }} onChange={(e) => {setselectedStudent({ ...selectedStudent, student_name: e.target.value })}} />
+                            </Box>
+                            <Box marginTop={1}>
+                                <TextField label='Gender' value={selectedStudent.gender} variant='outlined' style={{ width: '75%' }} onChange={(e) => {setselectedStudent({ ...selectedStudent, gender: e.target.value })}}/>
+                            </Box>
+                            <Box marginTop={1}>
+                                <TextField label='Contact Number' value={selectedStudent.contact_number} variant='outlined' style={{ width: '75%' }} onChange={(e) => {setselectedStudent({ ...selectedStudent, contact_number: e.target.value })}}/>
+                            </Box>
+                            <Box marginTop={1}>
+                                <TextField label='Address' value={selectedStudent.address} variant='outlined' style={{ width: '75%' }} onChange={(e) => {setselectedStudent({ ...selectedStudent, address: e.target.value })}}/>
+                            </Box>
+                            <Box marginTop={2}>
+                                <TextField label='Date Of Birth' value={selectedStudent.dob.toISOString().substring(0, 10)} type='date' InputLabelProps={{shrink: true}} variant='outlined' style={{ width: '75%' }} onChange={handleDobDateChange}/>
+                            </Box>
+                            <Box marginTop={1}>
+                                <TextField label='Guardian Name' value={selectedStudent.guardian_name} variant='outlined' style={{ width: '75%' }} onChange={(e) => {setselectedStudent({ ...selectedStudent, guardian_name: e.target.value })}}/>
+                            </Box>
+                            <Box marginTop={1}>
+                                <TextField label='Guardian Contact' value={selectedStudent.guardian_contact} variant='outlined' style={{ width: '75%' }} onChange={(e) => {setselectedStudent({ ...selectedStudent, guardian_contact: e.target.value })}}/>
+                            </Box>
+                            <Box marginTop={2}>
+                                <TextField label='Admission Date' value={selectedStudent.admission_date.toISOString().substring(0,10)} type='date' InputLabelProps={{shrink: true}} variant='outlined' style={{ width: '75%' }} onChange={handleAdminDateChange}/>
+                            </Box>
+                            <Box marginTop={2}>
+                                <TextField label='Graduation Date' value={selectedStudent.graduation_date.toISOString().substring(0,10)} type='date' InputLabelProps={{shrink: true}} variant='outlined' style={{ width: '75%' }} onChange={handleGradDateChange}/>
+                            </Box>
+                            <Box marginTop={1}>
+                                <TextField label='Current Grade' value={selectedStudent.current_grade} variant='outlined' style={{ width: '75%' }} onChange={(e) => {setselectedStudent({ ...selectedStudent, current_grade: e.target.value })}}/>
+                            </Box>
+                        </Grid>
+                        <Box marginTop={4} style={{ width: 'full', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                            <Button variant='contained' type='submit' onClick={updateStudent}>
+                                Save
+                            </Button>
+                            <Button variant='contained' type='submit' color='error' onClick={() => seteditModalOpen(false)}>
+                                Cancel
+                            </Button>
+                        </Box>
+                    </Box>
+                </Modal>
+            }
         </div >
     );
 }
