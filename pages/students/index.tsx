@@ -23,8 +23,14 @@ interface Column {
     format?: (value: Date) => string;
 }
 const getDatestring = (data: any) => {
+    try {
     const date = new Date(data);
     return date.toISOString().split('T')[0];
+        
+    } catch (error) {
+        return null
+        
+    }
 }
 interface Student {
     student_id: string,
@@ -120,7 +126,9 @@ const Students = () => {
         graduation_date: new Date(),
         current_grade: '',
     })
+        //random integer here ,
     const [newStudent, setNewStudent] = useState({
+        student_id: Math.floor(Math.random() * 1000000000).toString(),
         student_name: '',
         gender: 'female',
         contact_number: '',
@@ -275,8 +283,16 @@ const Students = () => {
         }
     }
 
-    const removeStudent = () => {
-        setStudents(students.filter(student => student.student_id !== selectedStudentId))
+    const removeStudent = async() => {
+        try {
+            const response = await axios.delete(`${backend}/api/Students/${selectedStudentId}`)
+            getStudents()
+        }
+        catch (error) {
+                console.error(error);
+                alert('An error occurred while submitting the data');
+        }                
+        
         setdeleteModalOpen(false)
     }
 
@@ -304,6 +320,7 @@ const Students = () => {
             //create student
             console.log(newStudent)
             const tempstudent = {
+                studentId: newStudent.student_id,
                 studentName: newStudent.student_name,
                 gender: newStudent.gender,
                 contactNumber: newStudent.contact_number,
@@ -321,9 +338,11 @@ const Students = () => {
 
             axios.post(backend+'/api/students',tempstudent).then((res)=>{
                 console.log(res);
+                getStudents();
             }).catch((err)=>{
                 console.log(err);
             })
+
         }
 
     }
