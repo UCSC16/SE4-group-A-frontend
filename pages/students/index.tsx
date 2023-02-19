@@ -1,14 +1,17 @@
 import {
     Alert, AlertTitle, Backdrop, Box, Button, Container, Fab, FormControl, FormControlLabel,
     FormLabel, Grid, Modal, Paper, RadioGroup, Radio, Table, TableBody, TableCell, TableContainer,
-    TableHead, TablePagination, TableRow, TextField, Typography
+    TableHead, TablePagination, TableRow, TextField, Typography, Card, Avatar
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import NavigationIcon from '@mui/icons-material/Navigation';
 import LoadingButton from '@mui/lab/LoadingButton';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-
+import styles from '@/pages/students/students.module.scss'
 
 import { useState, useRef } from "react";
 import axios from "axios";
@@ -179,6 +182,11 @@ const Students = () => {
         const date: Date = new Date(event.target.value);
         setselectedStudent({ ...selectedStudent, graduation_date: date })
     };
+    const calculateAge = (birthday: Date) => { // birthday is a date
+        const ageDifMs = Date.now() - birthday.getTime();
+        const ageDate = new Date(ageDifMs); // miliseconds from epoch
+        return Math.abs(ageDate.getUTCFullYear() - 1970);
+    }
 
     const updateStudent = async () => {
         try {
@@ -265,23 +273,23 @@ const Students = () => {
     const newName = useRef(null);
 
     const createStudent = () => {
-        setNewStudent({...newStudent, showErr: false})
+        setNewStudent({ ...newStudent, showErr: false })
         //validation
         if (newStudent.student_name === '') {
-            setNewStudent({...newStudent, showErr: true})
+            setNewStudent({ ...newStudent, showErr: true })
         }
         else if (newStudent.gender === '') {
-            setNewStudent({...newStudent, showErr: true})
+            setNewStudent({ ...newStudent, showErr: true })
             console.log(newStudent.gender)
         }
         else if (newStudent.contact_number === '') {
-            setNewStudent({...newStudent, showErr: true})
+            setNewStudent({ ...newStudent, showErr: true })
         }
         else if (newStudent.address === '') {
-            setNewStudent({...newStudent, showErr: true})
+            setNewStudent({ ...newStudent, showErr: true })
         }
         else if (newStudent.current_grade === '') {
-            setNewStudent({...newStudent, showErr: true})
+            setNewStudent({ ...newStudent, showErr: true })
         } else {
             //create student
             console.log(newStudent)
@@ -301,9 +309,9 @@ const Students = () => {
             console.log(tempstudent.dob.toString())
             console.log(tempstudent.admissionDate)
 
-            axios.post('http://35.192.153.99:5000/api/students',tempstudent).then((res)=>{
+            axios.post('http://35.192.153.99:5000/api/students', tempstudent).then((res) => {
                 console.log(res);
-            }).catch((err)=>{
+            }).catch((err) => {
                 console.log(err);
             })
         }
@@ -314,90 +322,83 @@ const Students = () => {
         <div>
             <h1>All Students</h1>
 
-            <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
-                <Paper sx={{ width: '100%', overflow: 'hidden' }} >
-                    <TableContainer sx={{ maxHeight: 440 }}>
-                        <Table stickyHeader aria-label="sticky table">
-                            <TableHead>
-                                <TableRow>
-                                    {columns.map((column) => (
-                                        <TableCell
-                                            key={column.id}
-                                            align='left'
-                                            style={{ minWidth: column.minWidth, textAlign: 'center', fontWeight: 'bold' }}
-                                        >
-                                            {column.label}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
+            <Box>
+                <Grid container spacing={1}>
+                    {rows.map((row, index) => {
+                        return (
+                            <Grid xs={3} /* p={1} */ key={index}>
+                                <Card className={styles.card} sx={{ textAlign: 'center' }}>
+                                    <h2>{row.student_name}</h2>
+                                    <Box sx={{ display: "flex", justifyContent: 'center' }}>
+                                        <Avatar sx={{ width: 70, height: 70 }} alt={"Student Name"} src="/static/images/avatar/1.jpg" />
+                                    </Box>
+                                    <p>{row.contact_number}</p>
+                                    <p>{row.gender}</p>
+                                    <p>{calculateAge(row.dob)}</p>
+                                    <p>{"Grade : " + row.current_grade}</p>
+                                    <Box sx={{ '& > :not(style)': { m: 1 } }} mb={2} >
+                                        <Fab size="medium" variant="extended" color="secondary" aria-label="more" onClick={(e)=>{alert('Hi Dilan')}}>
+                                            <NavigationIcon sx={{ mr: 1 }} />
+                                            Show More
+                                        </Fab>
+                                        <Fab size="small" color="info" aria-label="edit" onClick={(e) => {
+                                            seteditModalOpen(true)
+                                            setselectedStudentId(row.student_id)
+                                            setselectedStudent({
+                                                student_id: row.student_id,
+                                                student_name: row.student_name,
+                                                gender: row.gender,
+                                                contact_number: row.contact_number,
+                                                address: row.address,
+                                                dob: row.dob,
+                                                admission_date: row.admission_date,
+                                                graduation_date: row.graduation_date,
+                                                current_grade: row.current_grade,
+                                                guardian_name: row.guardian_name,
+                                                guardian_contact: row.guardian_contact,
+                                            })
+                                        }}>
+                                            <EditIcon />
+                                        </Fab>
+                                        <Fab size="small" color="error" aria-label="delete" onClick={() => {
+                                            setdeleteModalOpen(true)
+                                            setselectedStudentId(row.student_id)
+                                        }}>
+                                            <DeleteIcon />
+                                        </Fab>
+                                    </Box>
+                                </Card>
+                            </Grid>
+                        );
+                    })}
 
-                            <TableBody>
-                                {rows
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((row, index) => {
-                                        return (
-                                            <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                                                <TableCell
-                                                    align={'center'}
-                                                    onClick={(e) => {
-                                                        seteditModalOpen(true)
-                                                        setselectedStudentId(row.student_id)
-                                                        setselectedStudent({
-                                                            student_id: row.student_id,
-                                                            student_name: row.student_name,
-                                                            gender: row.gender,
-                                                            contact_number: row.contact_number,
-                                                            address: row.address,
-                                                            dob: row.dob,
-                                                            admission_date: row.admission_date,
-                                                            graduation_date: row.graduation_date,
-                                                            current_grade: row.current_grade,
-                                                            guardian_name: row.guardian_name,
-                                                            guardian_contact: row.guardian_contact,
-                                                        })
-                                                    }}
-                                                >
-                                                    <BorderColorIcon color="primary" fontSize="small" style={{ cursor: 'pointer' }} />
-                                                </TableCell>
+                    {/* Remopve this entire grid below, afrer the development and intergration. */}
+                    <Grid xs={4} p={1}>
+                        <Card className={styles.card} sx={{ textAlign: 'center' }}>
+                            <h2>{"Student Name"}</h2>
+                            <Box sx={{ display: "flex", justifyContent: 'center' }}>
+                                <Avatar sx={{ width: 70, height: 70 }} alt={"Student Name"} src="/static/images/avatar/1.jpg" />
+                            </Box>
+                            <p>{"0XX XXXXXXX"}</p>
+                            <p>{"Female"}</p>
+                            <p>{"22 Years Old"}</p>
+                            <p>{"Grade : 3.5486"}</p>
+                            <Box sx={{ '& > :not(style)': { m: 1 } }} mb={2} >
+                                <Fab size="medium" variant="extended" color="secondary" aria-label="more" onClick={(e)=>{alert('Hi Dilan')}}>
+                                    <NavigationIcon sx={{ mr: 1 }} />
+                                    Show More
+                                </Fab>
+                                <Fab size="small" color="info" aria-label="edit">
+                                    <EditIcon />
+                                </Fab>
+                                <Fab size="small" color="error" aria-label="delete">
+                                    <DeleteIcon />
+                                </Fab>
+                            </Box>
+                        </Card>
+                    </Grid>
 
-                                                <TableCell
-                                                    align={'center'}
-                                                    onClick={() => {
-                                                        setdeleteModalOpen(true)
-                                                        setselectedStudentId(row.student_id)
-                                                    }}
-                                                >
-                                                    <DeleteForeverIcon color="error" fontSize="small" style={{ cursor: 'pointer' }} />
-                                                </TableCell>
-
-                                                <TableCell align={'left'}>{row.student_name}</TableCell>
-                                                <TableCell align={'center'}>{row.gender}</TableCell>
-                                                <TableCell align={'left'}>{row.contact_number}</TableCell>
-                                                <TableCell align={'left'}>{row.address}</TableCell>
-                                                <TableCell align={'left'}>{row.dob.toLocaleDateString()}</TableCell>
-                                                <TableCell align={'left'}>{row.admission_date.toLocaleDateString()}</TableCell>
-                                                <TableCell align={'left'}>{row.graduation_date.toLocaleDateString()}</TableCell>
-                                                <TableCell align={'center'}>{row.current_grade}</TableCell>
-                                                <TableCell align={'center'}>{row.guardian_name}</TableCell>
-                                                <TableCell align={'center'}>{row.guardian_contact}</TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-
-                    <TablePagination
-                        rowsPerPageOptions={[10, 20, 30]}
-                        component="div"
-                        count={rows.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </Paper>
+                </Grid>
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -470,7 +471,7 @@ const Students = () => {
                                         aria-labelledby="demo-radio-buttons-group-label"
                                         defaultValue="female"
                                         name="radio-buttons-group"
-                                        
+
                                         onChange={(e) => { setNewStudent({ ...newStudent, gender: e.target.value }) }}
                                     >
                                         <FormControlLabel value="female" control={<Radio />} label="Female" />
