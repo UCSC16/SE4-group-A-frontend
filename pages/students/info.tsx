@@ -43,7 +43,7 @@ interface Achievement {
 const Info = () => {
     const router = useRouter();
     const { id } = router.query as any;
-    const carry_stuid = parseInt(id);
+    const carry_stuid = id.toString();
     console.log(carry_stuid)
     const [student, setStudent] = useState<Student[]>([])
     const [arcid, setArcid] = useState("");
@@ -60,7 +60,7 @@ const Info = () => {
         const row = res.data;
         setStudent(
             {
-                student_id: row.studentId,
+                student_id:carry_stuid,
                 student_name: row.studentName,
                 gender: row.gender,
                 contact_number: row.contactNumber,
