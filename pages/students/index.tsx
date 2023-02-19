@@ -194,9 +194,10 @@ const Students = () => {
         setselectedStudent({ ...selectedStudent, graduation_date: date })
     };
     const calculateAge = (birthday: Date) => { // birthday is a date
-        const ageDifMs = Date.now() - birthday.getTime();
+        const bday = new Date(birthday);
+        const ageDifMs = Date.now() - bday.getTime();
         const ageDate = new Date(ageDifMs); // miliseconds from epoch
-        return Math.abs(ageDate.getUTCFullYear() - 1970);
+        return Math.abs(ageDate.getUTCFullYear() - 1970); 
     }
 
     const updateStudent = async () => {
@@ -390,7 +391,7 @@ const Students = () => {
                 <Grid container spacing={1}>
                     {rows.map((row, index) => {
                         return (
-                            <Grid xs={3} /* p={1} */ key={index}>
+                            <Grid xs={4} /* p={1} */ key={index}>
                                 <Card className={styles.card} sx={{ textAlign: 'center' }}>
                                     <h2>{row.student_name}</h2>
                                     <Box sx={{ display: "flex", justifyContent: 'center' }}>
