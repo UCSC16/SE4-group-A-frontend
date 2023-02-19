@@ -198,7 +198,7 @@ const Info = () => {
                                     </TableRow>
                                     <TableRow>
                                         <TableCell>Contact Number</TableCell>
-                                        <TableCell align="right">{student.contactNumber}</TableCell>
+                                        <TableCell align="right">{student.contact_number}</TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableCell>Address</TableCell>
@@ -206,7 +206,7 @@ const Info = () => {
                                     </TableRow>
                                     <TableRow>
                                         <TableCell>Date of Birth</TableCell>
-                                        <TableCell align="right">{student.dob}</TableCell>
+                                        <TableCell align="right">{student.dob.toString()}</TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableCell>Current Grade</TableCell>
@@ -243,7 +243,7 @@ const Info = () => {
                                             <TableCell component="th" scope="row">
                                                 {row.achievement_id}
                                             </TableCell>
-                                            <TableCell align="right">{row.achievement_date}</TableCell>
+                                            <TableCell align="right">{row.achievement_date.toString()}</TableCell>
                                             <TableCell align="right">{row.description}</TableCell>
                                             <TableCell align="right" onClick={
                                                 (e) => {
@@ -357,7 +357,7 @@ const Info = () => {
                                         shrink: true,
                                     }}
                                     fullWidth
-                                    onChange={ (e) => { setCurrent_ach({ ...current_ach, achievement_date: e.target.value }) }}
+                                    onChange={ (e) => { setCurrent_ach({ ...current_ach, achievement_date:new Date(e.target.value) }) }}
                                 />
                             </Grid>
                             <Grid item xs={12}>
