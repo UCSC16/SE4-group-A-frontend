@@ -1,3 +1,8 @@
+import AddIcon from '@mui/icons-material/Add';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import SaveIcon from '@mui/icons-material/Save';
+import LoadingButton from '@mui/lab/LoadingButton';
 import {
     Alert, AlertTitle, Backdrop, Box, Button, Container, Fab, FormControl, FormControlLabel,
     FormLabel, Grid, Modal, Paper, RadioGroup, Radio, Table, TableBody, TableCell, TableContainer,
@@ -13,8 +18,9 @@ import BorderColorIcon from '@mui/icons-material/BorderColor';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import styles from '@/pages/students/students.module.scss'
 
-import { useState, useRef } from "react";
+import backend from "@/comps/config";
 import axios from "axios";
+import React, { useRef, useState } from 'react';
 
 interface Column {
     id: 'edit_std' | 'delete_std' | 'student_name' | 'gender' | 'contact_number' | 'address' | 'dob'
@@ -24,7 +30,16 @@ interface Column {
     align?: 'right';
     format?: (value: Date) => string;
 }
-
+const getDatestring = (data: any) => {
+    try {
+    const date = new Date(data);
+    return date.toISOString().split('T')[0];
+        
+    } catch (error) {
+        return null
+        
+    }
+}
 interface Student {
     student_id: string,
     student_name: string;
@@ -119,7 +134,9 @@ const Students = () => {
         graduation_date: new Date(),
         current_grade: '',
     })
+        //random integer here ,
     const [newStudent, setNewStudent] = useState({
+        student_id: Math.floor(Math.random() * 1000000000).toString(),
         student_name: '',
         gender: 'female',
         contact_number: '',
@@ -240,22 +257,36 @@ const Students = () => {
                 }, 3000);
             }
             else {
-                // await axios.put('https://test.com/api/v2', selectedStudent);
-                students.map((student) => {
-                    if (student.student_id === selectedStudent.student_id) {
-                        student.student_id = selectedStudent.student_id,
-                            student.student_name = selectedStudent.student_name,
-                            student.gender = selectedStudent.gender,
-                            student.contact_number = selectedStudent.contact_number,
-                            student.address = selectedStudent.address,
-                            student.dob = selectedStudent.dob,
-                            student.admission_date = selectedStudent.admission_date,
-                            student.graduation_date = selectedStudent.graduation_date,
-                            student.current_grade = selectedStudent.current_grade,
-                            student.guardian_name = selectedStudent.guardian_name,
-                            student.guardian_contact = selectedStudent.guardian_contact
-                    }
-                })
+                const datat ={
+                    "studentId": selectedStudent.student_id,
+                    "studentName": selectedStudent.student_name,
+                    "gender": selectedStudent.gender,
+                    "contactNumber": selectedStudent.contact_number,
+                    "address": selectedStudent.address,
+                    "dob": selectedStudent.dob,
+                    "guardianName": selectedStudent.guardian_name,
+                    "guardianContact": selectedStudent.guardian_contact,
+                    "admissionDate": selectedStudent.admission_date,
+                    "graduationDate": selectedStudent.graduation_date,
+                    "currentGrade": selectedStudent.current_grade,
+                    // "student": selectedStudent
+                  }
+                const response = await axios.put(`${backend}/api/Students/${selectedStudent.student_id}`,  datat          )    
+                // students.map((student) => {
+                //     if (student.student_id === selectedStudent.student_id) {
+                //         student.student_id = selectedStudent.student_id,
+                //             student.student_name = selectedStudent.student_name,
+                //             student.gender = selectedStudent.gender,
+                //             student.contact_number = selectedStudent.contact_number,
+                //             student.address = selectedStudent.address,
+                //             student.dob = selectedStudent.dob,
+                //             student.admission_date = selectedStudent.admission_date,
+                //             student.graduation_date = selectedStudent.graduation_date,
+                //             student.current_grade = selectedStudent.current_grade,
+                //             student.guardian_name = selectedStudent.guardian_name,
+                //             student.guardian_contact = selectedStudent.guardian_contact
+                //     }
+                // })
                 alert('Data submitted successfully');
                 seteditModalOpen(false)
             }
@@ -265,8 +296,16 @@ const Students = () => {
         }
     }
 
-    const removeStudent = () => {
-        setStudents(students.filter(student => student.student_id !== selectedStudentId))
+    const removeStudent = async() => {
+        try {
+            const response = await axios.delete(`${backend}/api/Students/${selectedStudentId}`)
+            getStudents()
+        }
+        catch (error) {
+                console.error(error);
+                alert('An error occurred while submitting the data');
+        }                
+        
         setdeleteModalOpen(false)
     }
 
@@ -294,6 +333,7 @@ const Students = () => {
             //create student
             console.log(newStudent)
             const tempstudent = {
+                studentId: newStudent.student_id,
                 studentName: newStudent.student_name,
                 gender: newStudent.gender,
                 contactNumber: newStudent.contact_number,
@@ -309,14 +349,44 @@ const Students = () => {
             console.log(tempstudent.dob.toString())
             console.log(tempstudent.admissionDate)
 
-            axios.post('http://35.192.153.99:5000/api/students', tempstudent).then((res) => {
+            axios.post(backend+'/api/students',tempstudent).then((res)=>{
                 console.log(res);
-            }).catch((err) => {
+                getStudents();
+            }).catch((err)=>{
                 console.log(err);
             })
+
         }
 
     }
+
+    const getStudents=async () => {
+        const res = await axios.get(backend+'/api/Students');
+        const data = res.data.map((student:any) => {
+            return {
+                student_id: student.studentId,
+                student_name: student.studentName,
+                gender: student.gender,
+                contact_number: student.contactNumber,
+                address: student.address,
+                dob: Date.parse(student.dob),
+                guardian_name: student.guardianName,
+                guardian_contact: student.guardianContact,
+                admission_date: Date.parse(student.admissionDate),
+                graduation_date: Date.parse(student.graduationDate),
+                current_grade: student.currentGrade,
+            };
+        })
+
+        console.log(res.data)
+        setStudents(data);
+    }
+
+    React.useEffect(() => {
+        getStudents();
+    }, [])
+
+    
 
     return (
         <div>
@@ -420,8 +490,8 @@ const Students = () => {
                     <Box component={Container} id="modal-modal-description" sx={{ mt: 1, px: 0 }}>
                         <Grid container spacing={2}>
 
-                            <Grid xs={12}><p>Personal Information</p></Grid>
-                            <Grid md={8}>
+                            <Grid item xs={12}><p>Personal Information</p></Grid>
+                            <Grid item md={8}>
                                 <TextField
                                     sx={{ mr: 2, mb: 1, width: '80%' }}
                                     label="Name"
@@ -464,7 +534,7 @@ const Students = () => {
                                     onChange={(e) => { setNewStudent({ ...newStudent, address: e.target.value }) }}
                                 />
                             </Grid>
-                            <Grid md={4}>
+                            <Grid item md={4}>
                                 <FormControl>
                                     <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
                                     <RadioGroup
@@ -485,7 +555,7 @@ const Students = () => {
                                     </Alert>
                                 }
                             </Grid>
-                            <Grid md={8}>
+                            <Grid item md={8}>
                                 <TextField
                                     sx={{ mr: 2, mb: 1, width: '80%' }}
                                     label="Guardian's Name"
@@ -506,11 +576,11 @@ const Students = () => {
                                 />
 
                             </Grid>
-                            <Grid md={4}>
+                            <Grid item md={4}>
 
                             </Grid>
-                            <Grid md={12}><p>Acedemic Information</p></Grid>
-                            <Grid md={8}>
+                            <Grid item md={12}><p>Acedemic Information</p></Grid>
+                            <Grid item md={8}>
                                 <TextField
                                     sx={{ mr: 2, mb: 1, width: '80%' }}
                                     label="Admission Date"
@@ -534,7 +604,7 @@ const Students = () => {
                                     onChange={(e) => { setNewStudent({ ...newStudent, graduation_date: new Date(e.target.value) }) }}
                                 />
                             </Grid>
-                            <Grid md={4}>
+                            <Grid item md={4}>
                                 <TextField
                                     sx={{ mr: 2, mb: 1, width: '80%' }}
                                     label="Grade"
@@ -546,7 +616,7 @@ const Students = () => {
                                     onChange={(e) => { setNewStudent({ ...newStudent, current_grade: e.target.value }) }}
                                 />
                             </Grid>
-                            <Grid md={12} sx={{ display: 'flex', justifyContent: 'end' }}>
+                            <Grid item md={12} sx={{ display: 'flex', justifyContent: 'end' }}>
                                 <LoadingButton
                                     // size="small"
                                     color="secondary"
@@ -630,7 +700,7 @@ const Students = () => {
                                 <TextField label='Address' value={selectedStudent.address} variant='outlined' style={{ width: '75%' }} onChange={(e) => { setselectedStudent({ ...selectedStudent, address: e.target.value }) }} />
                             </Box>
                             <Box marginTop={2}>
-                                <TextField label='Date Of Birth' value={selectedStudent.dob.toISOString().substring(0, 10)} type='date' InputLabelProps={{ shrink: true }} variant='outlined' style={{ width: '75%' }} onChange={handleDobDateChange} />
+                                <TextField label='Date Of Birth' value={getDatestring(selectedStudent.dob)} type='date' InputLabelProps={{ shrink: true }} variant='outlined' style={{ width: '75%' }} onChange={handleDobDateChange} />
                             </Box>
                             <Box marginTop={1}>
                                 <TextField label='Guardian Name' value={selectedStudent.guardian_name} variant='outlined' style={{ width: '75%' }} onChange={(e) => { setselectedStudent({ ...selectedStudent, guardian_name: e.target.value }) }} />
@@ -639,10 +709,10 @@ const Students = () => {
                                 <TextField label='Guardian Contact' value={selectedStudent.guardian_contact} variant='outlined' style={{ width: '75%' }} onChange={(e) => { setselectedStudent({ ...selectedStudent, guardian_contact: e.target.value }) }} />
                             </Box>
                             <Box marginTop={2}>
-                                <TextField label='Admission Date' value={selectedStudent.admission_date.toISOString().substring(0, 10)} type='date' InputLabelProps={{ shrink: true }} variant='outlined' style={{ width: '75%' }} onChange={handleAdminDateChange} />
+                                <TextField label='Admission Date' value={getDatestring(selectedStudent.admission_date)} type='date' InputLabelProps={{ shrink: true }} variant='outlined' style={{ width: '75%' }} onChange={handleAdminDateChange} />
                             </Box>
                             <Box marginTop={2}>
-                                <TextField label='Graduation Date' value={selectedStudent.graduation_date.toISOString().substring(0, 10)} type='date' InputLabelProps={{ shrink: true }} variant='outlined' style={{ width: '75%' }} onChange={handleGradDateChange} />
+                                <TextField label='Graduation Date' value={getDatestring(selectedStudent.graduation_date)} type='date' InputLabelProps={{ shrink: true }} variant='outlined' style={{ width: '75%' }} onChange={handleGradDateChange} />
                             </Box>
                             <Box marginTop={1}>
                                 <TextField label='Current Grade' value={selectedStudent.current_grade} variant='outlined' style={{ width: '75%' }} onChange={(e) => { setselectedStudent({ ...selectedStudent, current_grade: e.target.value }) }} />
