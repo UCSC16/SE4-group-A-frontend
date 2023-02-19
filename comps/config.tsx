@@ -1,6 +1,6 @@
 const backend =
   process.env.NODE_ENV === "production"
-    ? "http://10.5.0.7:80"
-    : "http://10.5.0.7:80";
+    ? "http://35.192.153.99:5000"
+    : "http://35.192.153.99:5000";
 
 export default backend;
