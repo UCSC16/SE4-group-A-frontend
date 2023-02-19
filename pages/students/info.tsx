@@ -74,6 +74,7 @@ const Info = () => {
     const getStudent = async () => {
         const res = await axios.get(`${backend}/api/students/${carry_stuid}`);
         const row = res.data;
+
         setStudent(
             {
                 student_id:carry_stuid,
@@ -95,7 +96,7 @@ const Info = () => {
     const [rows, setRows] = useState<Achievement[]>([])
     const getAchievement = async () => {
         const res = await axios.get(`${backend}/api/Achievement/GetAchievementByStudent/${carry_stuid}`);
-        const data = res.data.map((row: Achievement) => {
+        const data = res.data.map((row: { achievementId: any; studentId: any; achievementDate: any; description: any; }) => {
             return {
                 achievement_id: row.achievementId,
                 student_id: row.studentId,
