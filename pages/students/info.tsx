@@ -40,17 +40,23 @@ interface Achievement {
     delete_ach: string;
 }
 
-//create page for display student details with their achivements
-//in the same page write code for add/update or delete  achivement for student using model popup
 const Info = () => {
     const router = useRouter();
     const { id } = router.query as any;
     const carry_stuid = parseInt(id);
     console.log(carry_stuid)
     const [student, setStudent] = useState<Student[]>([])
-
+    const [arcid, setArcid] = useState("");
+    const [current_ach, setCurrent_ach] = useState<Achievement>({
+        achievement_id: "",
+        student_id: "",
+        achievement_date: new Date(),
+        description: "",
+        edit_ach: "",
+        delete_ach: ""
+    });
     const getStudent = async () => {
-        const res = await axios.get("http://35.192.153.99:5000/api/students/10000");
+        const res = await axios.get(`${backend}http://35.192.153.99:5000/api/students/${carry_stuid}`);
         const row = res.data;
         setStudent(
             {
@@ -70,7 +76,7 @@ const Info = () => {
     }
     const [rows, setRows] = useState<Achievement[]>([])
     const getAchievement = async () => {
-        const res = await axios.get("http://35.192.153.99:5000/api/Achievement/GetAchievementByStudent/10001");
+        const res = await axios.get(`${backend}/api/Achievement/GetAchievementByStudent/${carry_stuid}`);
         const data = res.data.map((row: Achievement) => {
             return {
                 achievement_id: row.achievementId,
@@ -108,22 +114,34 @@ const Info = () => {
     };
 
     const updateAchievement = async () => {
-
-        const res = await axios.put(`${backend}api/achievement/${carry_stuid}`);
+        const data = {
+            achievementId: current_ach.achievement_id,
+            studentId: current_ach.student_id,
+            achievementDate: current_ach.achievement_date,
+            description: current_ach.description
+        }
+        const res = await axios.put(`${backend}/api/Achievement/${arcid}`, data);
         if (res.status == 200) {
             setUpdate(false);
         }
     }
 
     const addAchievement = async () => {
-        const res = await axios.post(`${backend}api/achievement/${carry_stuid}`);
+        const data = {
+            achievementId: current_ach.achievement_id,
+            studentId: current_ach.student_id,
+            achievementDate: current_ach.achievement_date,
+            description: current_ach.description
+        }
+        const res = await axios.post(`${backend}/api/Achievement/${carry_stuid}`, data);
+
         if (res.status == 200) {
             setAdd(false);
         }
     }
 
     const deteleAchievement = async () => {
-        const res = await axios.delete(`${backend}api/achievement/${carry_stuid}`);
+        const res = await axios.delete(`${backend}/api/Achievement/${arcid}`);
         if (res.status == 200) {
             console.log("deleted");
         }
@@ -208,8 +226,19 @@ const Info = () => {
                                             </TableCell>
                                             <TableCell align="right">{row.achievement_date}</TableCell>
                                             <TableCell align="right">{row.description}</TableCell>
-                                            <TableCell align="right" onClick={handleUpdate}>{row.edit_ach}</TableCell>
-                                            <TableCell align="right" onClick={handleDelete}>{row.delete_ach}</TableCell>
+                                            <TableCell align="right" onClick={
+                                                (e) => {
+                                                    setUpdate(true);
+                                                }
+
+                                            }>{row.edit_ach}</TableCell>
+                                            <TableCell align="right" onClick={
+                                                (e) => {
+                                                    setArcid(row.achievement_id);
+                                                    deteleAchievement();
+                                                }
+                                                }
+                                            >{row.delete_ach}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -274,57 +303,64 @@ const Info = () => {
                     </Box>
                 </Modal>
             }
-            {update &&
-                <Modal
-                    open={handleUpdate}
-                    onClose={handleClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                >
-                    <Box sx={style}>
-                        <Typography id="modal-modal-title" variant="h6" component="h2">
-                            Update Achievement
-                        </Typography>
-                        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        id="outlined-multiline-static"
-                                        label="Description"
-                                        multiline
-                                        rows={4}
-                                        defaultValue=""
-                                        variant="outlined"
-                                        fullWidth
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        id="date"
-                                        label="Achievement Date"
-                                        type="date"
-                                        defaultValue="2017-05-24"
-                                        InputLabelProps={{
-                                            shrink: true,
-                                        }}
-                                        fullWidth
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <LoadingButton
-                                        loadingPosition="start"
-                                        startIcon={<SaveIcon />}
-                                        variant="contained"
-                                        onClick={updateAchievement}
-                                    >
-                                        Save
-                                    </LoadingButton>
-                                </Grid>
+            { update &&
+            <Modal
+                open={handleUpdate}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Update Achievement
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    id="outlined-multiline-static"
+                                    label="Description"
+                                    multiline
+                                    rows={4}
+                                    defaultValue=""
+                                    variant="outlined"
+                                    onChange={ (e) => { setCurrent_ach({ ...current_ach, description: e.target.value }) }}
+                                    fullWidth
+                                />
                             </Grid>
-                        </Typography>
-                    </Box>
-                </Modal>
-            }
+                            <Grid item xs={12}>
+                                <TextField
+                                    id="date"
+                                    label="Achievement Date"
+                                    type="date"
+                                    defaultValue="2017-05-24"
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    fullWidth
+                                    onChange={ (e) => { setCurrent_ach({ ...current_ach, achievement_date: e.target.value }) }}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <LoadingButton
+                                    loadingPosition="start"
+                                    startIcon={<SaveIcon />}
+                                    variant="contained"
+                                    onClick={
+                                        (e) => {
+                                            updateAchievement();
+                                            setUpdate(false);
+                                            }
+                                        }
+                                >
+                                    Save
+                                </LoadingButton>
+                            </Grid>
+                        </Grid>
+                    </Typography>
+                </Box>
+            </Modal>
+            }   
         </>
     );
 }
