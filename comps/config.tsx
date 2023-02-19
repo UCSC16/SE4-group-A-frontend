@@ -1,6 +1,6 @@
 const backend =
   process.env.NODE_ENV === "production"
-    ? "https://api.example.com"
-    : "https://localhost:7086";
+    ? "10.5.0.7:80"
+    : "10.5.0.7:80";
 
 export default backend;
