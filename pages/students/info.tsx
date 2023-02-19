@@ -42,8 +42,8 @@ interface Achievement {
 
 const Info = () => {
     const router = useRouter();
-    const { id } = router.query as any;
-    const carry_stuid = id.toString();
+    //set student id to a variable
+    const carry_stuid = "10000"
     console.log(carry_stuid)
     const [student, setStudent] = useState<Student>(
         {
@@ -132,13 +132,26 @@ const Info = () => {
         setAdd(false);
     };
 
+    const calculateAge = (birthday: Date) => { // birthday is a date
+        const bday = new Date(birthday)
+        const ageDifMs = Date.now() - bday.getTime();
+        const ageDate = new Date(ageDifMs); // miliseconds from epoch
+        return Math.abs(ageDate.getUTCFullYear() - 1970);
+    }
+
+    const readDate = (date:Date) => {
+        const mydate = new Date(date);
+        console.log(mydate);
+        return mydate;
+    }
     const updateAchievement = async () => {
         const data = {
-            achievementId: current_ach.achievement_id,
-            studentId: current_ach.student_id,
+            achievementId: arcid,
+            studentId: carry_stuid,
             achievementDate: current_ach.achievement_date,
             description: current_ach.description
         }
+        console.log(data);
         const res = await axios.put(`${backend}/api/Achievement/${arcid}`, data);
         if (res.status == 200) {
             setUpdate(false);
@@ -147,12 +160,14 @@ const Info = () => {
 
     const addAchievement = async () => {
         const data = {
-            achievementId: current_ach.achievement_id,
-            studentId: current_ach.student_id,
+            achievementId: "ACH" + Math.random().toString(36).substr(2, 9),
+            studentId: carry_stuid,
             achievementDate: current_ach.achievement_date,
             description: current_ach.description
         }
-        const res = await axios.post(`${backend}/api/Achievement/${carry_stuid}`, data);
+        console.log(data);
+
+        const res = await axios.post(`${backend}/api/Achievement`, data);
 
         if (res.status == 200) {
             setAdd(false);
@@ -169,6 +184,7 @@ const Info = () => {
     React.useEffect(() => {
         getStudent();
         getAchievement();
+        setArcid("10000"); //for atawana paramarthaya
     }, [])
 
     return (
@@ -205,8 +221,8 @@ const Info = () => {
                                         <TableCell align="right">{student.address}</TableCell>
                                     </TableRow>
                                     <TableRow>
-                                        <TableCell>Date of Birth</TableCell>
-                                        <TableCell align="right">{student.dob.toString()}</TableCell>
+                                        <TableCell>Age</TableCell>
+                                        <TableCell align="right">{calculateAge(student.dob)}</TableCell>
                                     </TableRow>
                                     <TableRow>
                                         <TableCell>Current Grade</TableCell>
@@ -243,18 +259,22 @@ const Info = () => {
                                             <TableCell component="th" scope="row">
                                                 {row.achievement_id}
                                             </TableCell>
-                                            <TableCell align="right">{row.achievement_date.toString()}</TableCell>
+                                            <TableCell align="right">{readDate(row.achievement_date).toDateString()}</TableCell>
                                             <TableCell align="right">{row.description}</TableCell>
                                             <TableCell align="right" onClick={
                                                 (e) => {
                                                     setUpdate(true);
+                                                    setArcid(row.achievement_id.toString());
                                                 }
 
                                             }>{row.edit_ach}</TableCell>
                                             <TableCell align="right" onClick={
                                                 (e) => {
-                                                    setArcid(row.achievement_id);
+                                                    //pass id and delete the particular achivement
+
+                                                    setArcid(row.achievement_id.toString());
                                                     deteleAchievement();
+
                                                 }
                                                 }
                                             >{row.delete_ach}</TableCell>
@@ -292,6 +312,7 @@ const Info = () => {
                                         rows={4}
                                         defaultValue=""
                                         variant="outlined"
+                                        onChange={ (e) => { setCurrent_ach({ ...current_ach, description: e.target.value }) }}
                                         fullWidth
                                     />
                                 </Grid>
@@ -304,6 +325,7 @@ const Info = () => {
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
+                                        onChange={ (e) => { setCurrent_ach({ ...current_ach, achievement_date: new Date(e.target.value) }) }}
                                         fullWidth
                                     />
                                 </Grid>
@@ -312,7 +334,11 @@ const Info = () => {
                                         loadingPosition="start"
                                         startIcon={<SaveIcon />}
                                         variant="contained"
-                                        onClick={addAchievement}
+                                        onClick={(e) => {
+                                            addAchievement();
+                                            setAdd(false);
+                                        }
+                                        }
                                     >
                                         Save
                                     </LoadingButton>
@@ -324,7 +350,7 @@ const Info = () => {
             }
             { update &&
             <Modal
-                open={handleUpdate}
+                open={update}
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
