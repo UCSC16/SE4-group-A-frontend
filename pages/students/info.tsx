@@ -45,7 +45,23 @@ const Info = () => {
     const { id } = router.query as any;
     const carry_stuid = id.toString();
     console.log(carry_stuid)
-    const [student, setStudent] = useState<Student[]>([])
+    const [student, setStudent] = useState<Student>(
+        {
+            student_id: "",
+            student_name: "",
+            gender: "",
+            contact_number: "",
+            address: "",
+            dob: new Date(),
+            admission_date: new Date(),
+            graduation_date: new Date(),
+            current_grade: "",
+            guardian_name: "",
+            guardian_contact: "",
+            edit_std: "",
+            delete_std: ""
+        }
+    );
     const [arcid, setArcid] = useState("");
     const [current_ach, setCurrent_ach] = useState<Achievement>({
         achievement_id: "",
@@ -70,7 +86,9 @@ const Info = () => {
                 graduation_date: row.graduationDate,
                 current_grade: row.currentGrade,
                 guardian_name: row.guardianName,
-                guardian_contact: row.guardianContact
+                guardian_contact: row.guardianContact,
+                edit_std: "",
+                delete_std: ""
             }
         );
     }
