@@ -1,6 +1,6 @@
 import {
     Alert, AlertTitle, Backdrop, Box, Button, Container, Fab, FormControl, FormControlLabel,
-    FormLabel, Grid, Modal,  RadioGroup, Radio,  TextField, Typography, Card, Avatar
+    FormLabel, Grid, Modal, RadioGroup, Radio, TextField, Typography, Card, Avatar
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
@@ -15,6 +15,7 @@ import styles from '@/pages/students/students.module.scss'
 import backend from "@/comps/config";
 import axios from "axios";
 import React, { useRef, useState } from 'react';
+import Link from "next/link";
 
 interface Column {
     id: 'edit_std' | 'delete_std' | 'student_name' | 'gender' | 'contact_number' | 'address' | 'dob'
@@ -26,12 +27,12 @@ interface Column {
 }
 const getDatestring = (data: any) => {
     try {
-    const date = new Date(data);
-    return date.toISOString().split('T')[0];
-        
+        const date = new Date(data);
+        return date.toISOString().split('T')[0];
+
     } catch (error) {
         return null
-        
+
     }
 }
 interface Student {
@@ -128,7 +129,7 @@ const Students = () => {
         graduation_date: new Date(),
         current_grade: '',
     })
-        //random integer here ,
+    //random integer here ,
     const [newStudent, setNewStudent] = useState({
         student_id: Math.floor(Math.random() * 1000000000).toString(),
         student_name: '',
@@ -197,7 +198,7 @@ const Students = () => {
         const bday = new Date(birthday);
         const ageDifMs = Date.now() - bday.getTime();
         const ageDate = new Date(ageDifMs); // miliseconds from epoch
-        return Math.abs(ageDate.getUTCFullYear() - 1970); 
+        return Math.abs(ageDate.getUTCFullYear() - 1970);
     }
 
     const updateStudent = async () => {
@@ -252,7 +253,7 @@ const Students = () => {
                 }, 3000);
             }
             else {
-                const datat ={
+                const datat = {
                     "studentId": selectedStudent.student_id,
                     "studentName": selectedStudent.student_name,
                     "gender": selectedStudent.gender,
@@ -265,8 +266,8 @@ const Students = () => {
                     "graduationDate": selectedStudent.graduation_date,
                     "currentGrade": selectedStudent.current_grade,
                     // "student": selectedStudent
-                  }
-                const response = await axios.put(`${backend}/api/Students/${selectedStudent.student_id}`,  datat          )    
+                }
+                const response = await axios.put(`${backend}/api/Students/${selectedStudent.student_id}`, datat)
                 // students.map((student) => {
                 //     if (student.student_id === selectedStudent.student_id) {
                 //         student.student_id = selectedStudent.student_id,
@@ -291,16 +292,16 @@ const Students = () => {
         }
     }
 
-    const removeStudent = async() => {
+    const removeStudent = async () => {
         try {
             const response = await axios.delete(`${backend}/api/Students/${selectedStudentId}`)
             getStudents()
         }
         catch (error) {
-                console.error(error);
-                alert('An error occurred while submitting the data');
-        }                
-        
+            console.error(error);
+            alert('An error occurred while submitting the data');
+        }
+
         setdeleteModalOpen(false)
     }
 
@@ -344,10 +345,10 @@ const Students = () => {
             console.log(tempstudent.dob.toString())
             console.log(tempstudent.admissionDate)
 
-            axios.post(backend+'/api/students',tempstudent).then((res)=>{
+            axios.post(backend + '/api/students', tempstudent).then((res) => {
                 console.log(res);
                 getStudents();
-            }).catch((err)=>{
+            }).catch((err) => {
                 console.log(err);
             })
 
@@ -355,9 +356,9 @@ const Students = () => {
 
     }
 
-    const getStudents=async () => {
-        const res = await axios.get(backend+'/api/Students');
-        const data = res.data.map((student:any) => {
+    const getStudents = async () => {
+        const res = await axios.get(backend + '/api/Students');
+        const data = res.data.map((student: any) => {
             return {
                 student_id: student.studentId,
                 student_name: student.studentName,
@@ -381,17 +382,17 @@ const Students = () => {
         getStudents();
     }, [])
 
-    
+
 
     return (
         <div>
             <h1>All Students</h1>
 
             <Box>
-                <Grid container spacing={1}>
+                <Grid container /* spacing={1} */>
                     {rows.map((row, index) => {
                         return (
-                            <Grid xs={4} /* p={1} */ key={index}>
+                            <Grid xs={4} p={1} key={index}>
                                 <Card className={styles.card} sx={{ textAlign: 'center' }}>
                                     <h2>{row.student_name}</h2>
                                     <Box sx={{ display: "flex", justifyContent: 'center' }}>
@@ -402,10 +403,12 @@ const Students = () => {
                                     <p>{calculateAge(row.dob)}</p>
                                     <p>{"Grade : " + row.current_grade}</p>
                                     <Box sx={{ '& > :not(style)': { m: 1 } }} mb={2} >
-                                        <Fab size="medium" variant="extended" color="secondary" aria-label="more" onClick={(e)=>{alert('Hi Dilan')}}>
-                                            <NavigationIcon sx={{ mr: 1 }} />
-                                            Show More
-                                        </Fab>
+                                        <Link href={`students/info?id=${row.student_id}`}>
+                                            <Fab size="medium" variant="extended" color="secondary" aria-label="more">
+                                                <NavigationIcon sx={{ mr: 1 }} />
+                                                Show More
+                                            </Fab>
+                                        </Link>
                                         <Fab size="small" color="info" aria-label="edit" onClick={(e) => {
                                             seteditModalOpen(true)
                                             setselectedStudentId(row.student_id)
@@ -449,7 +452,7 @@ const Students = () => {
                             <p>{"22 Years Old"}</p>
                             <p>{"Grade : 3.5486"}</p>
                             <Box sx={{ '& > :not(style)': { m: 1 } }} mb={2} >
-                                <Fab size="medium" variant="extended" color="secondary" aria-label="more" onClick={(e)=>{alert('Hi Dilan')}}>
+                                <Fab size="medium" variant="extended" color="secondary" aria-label="more" onClick={(e) => { alert('Redirecting to Students/info page') }}>
                                     <NavigationIcon sx={{ mr: 1 }} />
                                     Show More
                                 </Fab>

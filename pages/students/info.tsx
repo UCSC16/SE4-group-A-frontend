@@ -13,6 +13,7 @@ import {
 import backend from "@/comps/config";
 import axios from "axios";
 import React, { useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 
 interface Student {
     student_id: string,
@@ -39,11 +40,13 @@ interface Achievement {
     delete_ach: string;
 }
 
-
 //create page for display student details with their achivements
 //in the same page write code for add/update or delete  achivement for student using model popup
 const Info = () => {
-    const carry_stuid = "10000";
+    const router = useRouter();
+    const { id } = router.query as any;
+    const carry_stuid = parseInt(id);
+    console.log(carry_stuid)
     const [student, setStudent] = useState<Student[]>([])
 
     const getStudent = async () => {
@@ -105,7 +108,7 @@ const Info = () => {
     };
 
     const updateAchievement = async () => {
-        
+
         const res = await axios.put(`${backend}api/achievement/${carry_stuid}`);
         if (res.status == 200) {
             setUpdate(false);
@@ -220,108 +223,108 @@ const Info = () => {
                     </Grid>
                 </Grid>
             </Container>
-            { add &&
-            <Modal
-                open={add}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Add Achievement
-                    </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <TextField
-                                    id="outlined-multiline-static"
-                                    label="Description"
-                                    multiline
-                                    rows={4}
-                                    defaultValue=""
-                                    variant="outlined"
-                                    fullWidth
-                                />
+            {add &&
+                <Modal
+                    open={add}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Box sx={style}>
+                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                            Add Achievement
+                        </Typography>
+                        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="outlined-multiline-static"
+                                        label="Description"
+                                        multiline
+                                        rows={4}
+                                        defaultValue=""
+                                        variant="outlined"
+                                        fullWidth
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="date"
+                                        label="Achievement Date"
+                                        type="date"
+                                        defaultValue="2017-05-24"
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        fullWidth
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <LoadingButton
+                                        loadingPosition="start"
+                                        startIcon={<SaveIcon />}
+                                        variant="contained"
+                                        onClick={addAchievement}
+                                    >
+                                        Save
+                                    </LoadingButton>
+                                </Grid>
                             </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    id="date"
-                                    label="Achievement Date"
-                                    type="date"
-                                    defaultValue="2017-05-24"
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    fullWidth
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <LoadingButton
-                                    loadingPosition="start"
-                                    startIcon={<SaveIcon />}
-                                    variant="contained"
-                                    onClick={addAchievement}
-                                >
-                                    Save
-                                </LoadingButton>
-                            </Grid>
-                        </Grid>
-                    </Typography>
-                </Box>
-            </Modal>
+                        </Typography>
+                    </Box>
+                </Modal>
             }
-            { update &&
-            <Modal
-                open={handleUpdate}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Update Achievement
-                    </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <TextField
-                                    id="outlined-multiline-static"
-                                    label="Description"
-                                    multiline
-                                    rows={4}
-                                    defaultValue=""
-                                    variant="outlined"
-                                    fullWidth
-                                />
+            {update &&
+                <Modal
+                    open={handleUpdate}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Box sx={style}>
+                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                            Update Achievement
+                        </Typography>
+                        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="outlined-multiline-static"
+                                        label="Description"
+                                        multiline
+                                        rows={4}
+                                        defaultValue=""
+                                        variant="outlined"
+                                        fullWidth
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="date"
+                                        label="Achievement Date"
+                                        type="date"
+                                        defaultValue="2017-05-24"
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        fullWidth
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <LoadingButton
+                                        loadingPosition="start"
+                                        startIcon={<SaveIcon />}
+                                        variant="contained"
+                                        onClick={updateAchievement}
+                                    >
+                                        Save
+                                    </LoadingButton>
+                                </Grid>
                             </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    id="date"
-                                    label="Achievement Date"
-                                    type="date"
-                                    defaultValue="2017-05-24"
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    fullWidth
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <LoadingButton
-                                    loadingPosition="start"
-                                    startIcon={<SaveIcon />}
-                                    variant="contained"
-                                    onClick={updateAchievement}
-                                >
-                                    Save
-                                </LoadingButton>
-                            </Grid>
-                        </Grid>
-                    </Typography>
-                </Box>
-            </Modal>
-            }   
+                        </Typography>
+                    </Box>
+                </Modal>
+            }
         </>
     );
 }
