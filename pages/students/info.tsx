@@ -56,7 +56,7 @@ const Info = () => {
         delete_ach: ""
     });
     const getStudent = async () => {
-        const res = await axios.get(`${backend}http://35.192.153.99:5000/api/students/${carry_stuid}`);
+        const res = await axios.get(`${backend}/api/students/${carry_stuid}`);
         const row = res.data;
         setStudent(
             {
