@@ -440,31 +440,7 @@ const Students = () => {
                         );
                     })}
 
-                    {/* Remopve this entire grid below, afrer the development and intergration. */}
-                    <Grid xs={4} p={1}>
-                        <Card className={styles.card} sx={{ textAlign: 'center' }}>
-                            <h2>{"Student Name"}</h2>
-                            <Box sx={{ display: "flex", justifyContent: 'center' }}>
-                                <Avatar sx={{ width: 70, height: 70 }} alt={"Student Name"} src="/static/images/avatar/1.jpg" />
-                            </Box>
-                            <p>{"0XX XXXXXXX"}</p>
-                            <p>{"Female"}</p>
-                            <p>{"22 Years Old"}</p>
-                            <p>{"Grade : 3.5486"}</p>
-                            <Box sx={{ '& > :not(style)': { m: 1 } }} mb={2} >
-                                <Fab size="medium" variant="extended" color="secondary" aria-label="more" onClick={(e) => { alert('Redirecting to Students/info page') }}>
-                                    <NavigationIcon sx={{ mr: 1 }} />
-                                    Show More
-                                </Fab>
-                                <Fab size="small" color="info" aria-label="edit">
-                                    <EditIcon />
-                                </Fab>
-                                <Fab size="small" color="error" aria-label="delete">
-                                    <DeleteIcon />
-                                </Fab>
-                            </Box>
-                        </Card>
-                    </Grid>
+                    
 
                 </Grid>
             </Box>
