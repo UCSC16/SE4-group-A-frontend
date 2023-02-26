@@ -44,7 +44,7 @@ interface Student {
     address: string;
     dob: Date;
     admission_date: Date;
-    graduation_date: Date | null;
+    graduation_date: Date;
     current_grade: string;
     guardian_name: string;
     guardian_contact: string;
@@ -77,7 +77,7 @@ function createStudentData(
     address: string,
     dob: Date,
     admission_date: Date,
-    graduation_date: Date | null,
+    graduation_date: Date,
     current_grade: string,
     guardian_name: string,
     guardian_contact: string,
@@ -127,7 +127,7 @@ const Students = () => {
         guardian_name: '',
         guardian_contact: '',
         admission_date: new Date(),
-        graduation_date: null,
+        graduation_date: new Date(),
         current_grade: '',
     })
     //random integer here ,
@@ -141,7 +141,7 @@ const Students = () => {
         guardian_name: '',
         guardian_contact: '',
         admission_date: new Date(),
-        graduation_date: null,
+        graduation_date: new Date(),
         current_grade: '',
         showErr: false,
     })
@@ -192,12 +192,8 @@ const Students = () => {
         setselectedStudent({ ...selectedStudent, admission_date: date })
     };
     const handleGradDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if(event.target.value === ''){
-            setselectedStudent({ ...selectedStudent, graduation_date: null })
-        } else {
-            const date: Date = new Date(event.target.value);
-            setselectedStudent({ ...selectedStudent, graduation_date: date })
-        }
+        const date: Date = new Date(event.target.value);
+        setselectedStudent({ ...selectedStudent, graduation_date: date })
     };
     const calculateAge = (birthday: Date) => { // birthday is a date
         const bday = new Date(birthday)
@@ -353,7 +349,7 @@ const Students = () => {
                 guardianName: newStudent.guardian_name,
                 guardianContact: newStudent.guardian_contact,
                 admissionDate: newStudent.admission_date.toISOString(),
-                graduationDate: newStudent.graduation_date? newStudent.graduation_date.toISOString(): null,
+                graduationDate: newStudent.graduation_date.toISOString(),
                 currentGrade: newStudent.current_grade,
             }
             console.log(tempstudent)
@@ -436,7 +432,7 @@ const Students = () => {
                                                 address: row.address,
                                                 dob: row.dob,
                                                 admission_date: row.admission_date,
-                                                graduation_date: row.graduation_date || null,
+                                                graduation_date: row.graduation_date,
                                                 current_grade: row.current_grade,
                                                 guardian_name: row.guardian_name,
                                                 guardian_contact: row.guardian_contact,
