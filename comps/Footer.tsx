@@ -1,6 +1,8 @@
+import styles from '@/styles/Home.module.scss'
+
 const Footer = () => {
     return (
-      <footer>
+      <footer className={styles.foot}>
         Copyright 2023 Group A - Docker Assignment
       </footer>
     );

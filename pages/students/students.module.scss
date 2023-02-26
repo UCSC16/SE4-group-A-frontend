@@ -1,18 +1,27 @@
-.card{
-    // background-color: rgb(57, 50, 50);
+.card {
+    background-color: #ffffff66;
     border-radius: 12px;
     transition: all 0.5s ease-out;
+    box-shadow: #00000070 2px 2px 5px !important;
 
-    &:hover{
+
+    &:hover {
         transform: scale(1.02);
         transition: all 0.2s ease-in;
+        box-shadow: #00000070 2px 2px 5px 3px !important;
+
     }
 
-    button{
+    button {
         transition: all 0.3s ease-out;
-        &:hover{
+
+        &:hover {
             transform: translateY(-5px);
             transition: all 0.2s ease-in;
         }
     }
+}
+
+.panel{
+    background-color: #ffffffc0;
 }

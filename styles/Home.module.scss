@@ -1,0 +1,180 @@
+.title {
+    color: #333;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+.text {
+    color: #273054;
+    text-shadow: #ffffff 1px 1px 2px;
+
+}
+
+.htext {
+    color: #273054;
+    font-size: 40px;
+    font-weight: 700;
+    text-shadow: #ffffff 1px 1px 2px;
+}
+
+.btn {
+    display: block;
+    width: 150px;
+    padding: 8px 0;
+    margin: 20px auto;
+    background: #4979ff;
+    border-radius: 4px;
+    color: white;
+    text-align: center;
+}
+
+.heroText {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 30px;
+    color: #6b6b6b;
+    text-shadow: #9a9a9a 1px 1px 3px;
+
+    span {
+        font-size: 100px;
+        font-weight: 500;
+        color: #344389;
+    }
+}
+
+.backdropTitle {
+    // background-image: url('../assets/imgs/4855400.jpg');
+    // background-size: cover;
+    background-color: #ffffff77 !important;
+    // background-blend-mode: screen;
+}
+
+.btnPanel {
+    display: flex;
+    align-items: end;
+    background-size: cover;
+    background-position: top right;
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-color: #ffffff77 !important;
+    // background-blend-mode: screen;
+    background-image: url('../assets/imgs/4151546.png');
+    box-shadow: #00000070 2px 2px 5px !important;
+    
+    .btnText{
+        font-family: 'Open Sans', sans-serif;
+        font-size: 40px;
+        font-weight: 600;
+        color: #344389;
+        text-shadow: #9a9a9a 1px 1px 3px;
+    }
+
+    &:hover{
+        transform: scale(1.05);
+        transition: all 0.3s ease-out;
+        cursor: pointer;
+        box-shadow: #00000070 2px 2px 5px 3px !important;
+    }
+}
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    background-size: cover;
+    background-position: center left;
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-color: #ffffff77 !important;
+    // background-blend-mode: screen;
+    // background-image: url('../assets/imgs/7856.png');
+    box-shadow: #00000070 2px 2px 5px !important;
+    
+    .info{
+        font-family: 'Open Sans', sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: #344389;
+        text-shadow: #9a9a9a 1px 1px 3px;
+        height: 30px;
+    }
+
+    .value{
+        font-family: 'Open Sans', sans-serif;
+        font-size: 50px;
+        line-height: 55px;
+        font-weight: 800;
+        color: #000000;
+        text-shadow: #9a9a9a 1px 1px 3px;
+        align-self: flex-end;
+        justify-self: left;
+        margin: 10px -10px 20px 10px ;
+    }
+
+    &:hover{
+        transform: scale(1.05);
+        transition: all 0.3s ease-out;
+        cursor: pointer;
+        box-shadow: #00000070 2px 2px 5px 3px !important;
+    }
+}
+.infoPanel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    background-size: cover;
+    background-position: center left;
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-color: #ffffff77 !important;
+    // background-blend-mode: screen;
+    background-image: url('../assets/imgs/7856.png');
+    box-shadow: #00000070 2px 2px 5px !important;
+    
+    .info{
+        font-family: 'Open Sans', sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: #344389;
+        text-shadow: #9a9a9a 1px 1px 3px;
+        height: 30px;
+    }
+
+    .value{
+        font-family: 'Open Sans', sans-serif;
+        font-size: 50px;
+        line-height: 55px;
+        font-weight: 800;
+        color: #000000;
+        text-shadow: #9a9a9a 1px 1px 3px;
+        align-self: flex-end;
+        justify-self: left;
+        margin: 10px -10px 20px 10px ;
+    }
+
+    &:hover{
+        transform: scale(1.05);
+        transition: all 0.3s ease-out;
+        cursor: pointer;
+        box-shadow: #00000070 2px 2px 5px 3px !important;
+    }
+}
+
+.nav{
+    color: #000000;
+    font-size: 20px;
+    font-weight: 700;
+    transition: all 0.3s ease-out;
+    margin: 0px 10px;
+    
+    &:hover{
+        transform: scale(1.05) translateY(-3px);
+        transition: all 0.2s ease-out;
+    }
+
+}
+
+.foot{
+    color: #344389;
+}

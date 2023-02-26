@@ -259,7 +259,7 @@ const Students = () => {
                 let tempAdm = new Date(selectedStudent.admission_date)
                 let updatedAdm = new Date(tempAdm.getTime() - (tempAdm.getTimezoneOffset() * 60000)).toISOString()
                 let updatedGrad = null;
-                if(selectedStudent.graduation_date){
+                if (selectedStudent.graduation_date) {
                     let tempGrad = new Date(selectedStudent.graduation_date);
                     updatedGrad = new Date(tempGrad.getTime() - (tempGrad.getTimezoneOffset() * 60000)).toISOString();
                 }
@@ -381,7 +381,7 @@ const Students = () => {
                 guardian_name: student.guardianName,
                 guardian_contact: student.guardianContact,
                 admission_date: Date.parse(student.admissionDate),
-                graduation_date: student.graduationDate? Date.parse(student.graduationDate) : null,
+                graduation_date: student.graduationDate ? Date.parse(student.graduationDate) : null,
                 current_grade: student.currentGrade,
             };
         })
@@ -452,13 +452,13 @@ const Students = () => {
                         );
                     })}
 
-                    
+
 
                 </Grid>
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Fab onClick={handleOpen} color="primary" aria-label="add">
+                <Fab className={styles.floatBtn} onClick={handleOpen} color="primary" aria-label="add">
                     <AddIcon />
                 </Fab>
             </Box>
@@ -469,7 +469,7 @@ const Students = () => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={style}>
+                <Box sx={style} className={styles.panel}>
                     <Typography id="modal-modal-title" variant="h5" component="h2">
                         Create a new student profile
                     </Typography>
@@ -633,7 +633,7 @@ const Students = () => {
                         timeout: 500,
                     }}
                 >
-                    <Box sx={style}>
+                    <Box sx={style}  className={styles.panel}>
                         <Typography id="transition-modal-title" variant="h6" component="h2">
                             Delete Student
                         </Typography>
@@ -660,7 +660,7 @@ const Students = () => {
                         timeout: 500,
                     }}
                 >
-                    <Box sx={style}>
+                    <Box sx={style} className={styles.panel}>
                         <Typography variant='h4' gutterBottom >
                             Update Details of {selectedStudent.student_name}
                         </Typography>

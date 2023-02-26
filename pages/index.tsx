@@ -1,5 +1,5 @@
-import styles from '@/styles/Home.module.css';
-import { SelectChangeEvent } from "@mui/material";
+import styles from '@/styles/Home.module.scss';
+import { Box, Grid, Paper, SelectChangeEvent } from "@mui/material";
 import { Inter } from "@next/font/google";
 import { useState } from "react";
 
@@ -16,88 +16,66 @@ export default function Home() {
     return (
         <>
 
-            <div>
-                <h1 className={styles.title}>Homepage</h1>
-                <p className={styles.text}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus animi impedit suscipit architecto, odio inventore nostrum non neque dicta. Quam magni accusantium culpa distinctio tempore iure accusamus, dolorem nobis odit.</p>
-                <p className={styles.text}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus animi impedit suscipit architecto, odio inventore nostrum non neque dicta. Quam magni accusantium culpa distinctio tempore iure accusamus, dolorem nobis odit.</p>
-                {/* <Link href="/students/" className={styles.btn}>
-                    See Student Listing
-                </Link> */}
-            </div>
-            {/* <Box p={3}>
-                    <h1 className="text-3xl font-bold underline">Hello world!</h1>
-                    <Button variant="contained">Hello World</Button>
-                    <Button variant="text">Text</Button>
-                    <Button variant="contained">Contained</Button>
-                    <Button variant="outlined">Outlined</Button>
-                </Box>
-                <Box p={3}>
-                    <Checkbox {...label} defaultChecked />
-                    <Checkbox {...label} defaultChecked color="secondary" />
-                    <Checkbox {...label} defaultChecked color="success" />
-                    <Checkbox {...label} defaultChecked color="default" />
+            <Box sx={{ flexGrow: 1 }}>
+                <Grid container spacing={4}>
+                    <Grid xs={8} sx={{ padding: '10px' }}>
+                        <Paper className={styles.backdropTitle} sx={{ padding: '1px 30px', borderRadius: '15px' }}>
+                            <p className={styles.heroText}>
+                                Welcome to <br />
+                                <span>Student <br />Manager<br /> Application   </span>
+                                v1.0
+                            </p>
+                        </Paper>
+                    </Grid>
+                    <Grid container xs={4}>
+                        <Box sx={{ padding: '10px' }}>
+                            <a href="./students">
+                                <Paper className={styles.btnPanel} sx={{ padding: '1px 30px', borderRadius: '15px', height: '100%' }}>
+                                    <p className={styles.btnText}>
+                                        View Students
+                                    </p>
+                                </Paper>
+                            </a>
+                        </Box>
+                        <Grid xs={6} sx={{ padding: '10px' }}>
+                            <Paper className={styles.infoPanel} sx={{ padding: '1px 30px', borderRadius: '15px', height: '100%' }}>
+                                <p className={styles.info}>
+                                    Student <br />
+                                    Count
+                                </p>
+                                <p className={styles.value}>
+                                    10
+                                </p>
+                            </Paper>
+                        </Grid>
+                        <Grid xs={6} sx={{ padding: '10px' }}>
+                            <Paper className={styles.infoPanel} sx={{ padding: '1px 30px', borderRadius: '15px', height: '100%' }}>
+                                <p className={styles.info}>
+                                    Student <br />
+                                    Count
+                                </p>
+                                <p className={styles.value}>
+                                    10
+                                </p>
+                            </Paper>
+                        </Grid>
+                    </Grid>
 
-                </Box>
-                <Box p={3} mt={3} className="">
-                    <hr />
-                    <h2>Use these elements to build forms</h2>
-                    <Paper elevation={3} >
-                        <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                            <InputLabel id="demo-select-small">DropDown</InputLabel>
-                            <Select
-                                labelId="demo-select-small"
-                                id="demo-select-small"
-                                value={age}
-                                label="Age"
-                                onChange={handleChange}
-                            >
-                                <MenuItem value="">
-                                    <em>None</em>
-                                </MenuItem>
-                                <MenuItem value={10}>Ten</MenuItem>
-                                <MenuItem value={20}>Twenty</MenuItem>
-                                <MenuItem value={30}>Thirty</MenuItem>
-                            </Select>
-
-                        </FormControl>
-                        <TextField
-                            sx={{ m: 1 }}
-                            label="Text Field"
-                            id="outlined-size-small"
-                            defaultValue="Hello I'm default value"
-                            size="small"
-                        />
-                    </Paper>
-                    <Box mt={3} sx={{ flexGrow: 1 }}>
-                        <Grid container spacing={2}>
-                            <Grid xs={8}>
-                                <Paper>xs=8</Paper>
+                    <Grid xs={12} sx={{ padding: '10px' }}>
+                        <Paper className={styles.panel} sx={{ padding: '1px 30px', borderRadius: '15px', height: '100%' }}>
+                        <Grid container>
+                            <Grid xs={4} sx={{ padding: '10px' }}>
+                                <p className={styles.htext}>Homepage</p>
                             </Grid>
-                            <Grid xs={4}>
-                                <Paper>xs=4</Paper>
-                            </Grid>
-                            <Grid xs={4}>
-                                <Paper>xs=4</Paper>
-                            </Grid>
-                            <Grid xs={8}>
-                                <Paper>xs=8</Paper>
+                            <Grid xs={8} sx={{ padding: '10px' }}>
+                            <p className={styles.text}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus animi impedit suscipit architecto, odio inventore nostrum non neque dicta. Quam magni accusantium culpa distinctio tempore iure accusamus, dolorem nobis odit.</p>
+                            <p className={styles.text}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus animi impedit suscipit architecto, odio inventore nostrum non neque dicta. Quam magni accusantium culpa distinctio tempore iure accusamus, dolorem nobis odit.</p>
                             </Grid>
                         </Grid>
-                    </Box>
-                    <Box>
-                    <ul>
-                      <li>
-                        <Link href="/">Home</Link>
-                      </li>
-                      <li>
-                        <Link href="">Document</Link>
-                      </li>
-                      <li>
-                        <Link href="/api/hello">Blog Post</Link>
-                      </li>
-                    </ul>
-                    </Box>
-                </Box> */}
+                        </Paper>
+                    </Grid>
+                </Grid>
+            </Box>
         </>
     );
 }

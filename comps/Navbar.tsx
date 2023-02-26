@@ -1,6 +1,7 @@
-import styles from '@/styles/Home.module.css'
+import styles from '@/styles/Home.module.scss'
 import Link from 'next/link';
 import Head from "next/head";
+import { style } from '@mui/system';
 
 const Navbar = () => {
   return (
@@ -13,11 +14,11 @@ const Navbar = () => {
     </Head>
     <nav>
       <div className="logo">
-        <h1>Student Manager v1</h1>
+        <h1>Student Manager v1.0</h1>
       </div>
-      <Link href="/">Home</Link>
-      <Link href="/about">About</Link>
-      <Link href="/students/">Student Listing</Link>
+      <Link className={styles.nav} href="/">Home</Link>
+      <Link className={styles.nav} href="/about">About</Link>
+      <Link className={styles.nav} href="/students/">Student Listing</Link>
     </nav>
     </>
 );
