@@ -1,12 +1,7 @@
 const devURL = "http://localhost:5000";
-const prodURL = process.env.REACT_APP_PROD_URL || "http://35.192.153.99:5000";
+const prodURL = process.env.NEXT_PUBLIC_PROD_URL || devURL;
 
 const backend =
-  process.env.NODE_ENV === "production" ? prodURL : "http://35.192.153.99:5000";
-
-//   const backend =
-// process.env.NODE_ENV === "production"
-//   ? "http://35.192.153.99:5000"
-//   : "http://35.192.153.99:5000";
+  process.env.NODE_ENV === "production" ? prodURL : devURL;
 
 export default backend;
