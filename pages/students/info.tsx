@@ -43,8 +43,7 @@ interface Achievement {
 const Info = () => {
     const router = useRouter();
     //set student id to a variable
-    const carry_stuid = "10000"
-    console.log(carry_stuid)
+    const carry_stuid = router.query.id as string || "10000";
     const [student, setStudent] = useState<Student>(
         {
             student_id: "",
@@ -62,6 +61,17 @@ const Info = () => {
             delete_std: ""
         }
     );
+    const getDatestring = (data: any) => {
+        try {
+            if (data == null) return null;
+            const date = new Date(data);
+            return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+    
+        } catch (error) {
+            return null
+    
+        }
+    }
     const [arcid, setArcid] = useState("");
     const [current_ach, setCurrent_ach] = useState<Achievement>({
         achievement_id: "",
@@ -94,7 +104,7 @@ const Info = () => {
         );
     }
     const [rows, setRows] = useState<Achievement[]>([])
-    const getAchievement = async () => {
+    const getAchievements = async () => {
         const res = await axios.get(`${backend}/api/Achievement/GetAchievementByStudent/${carry_stuid}`);
         const data = res.data.map((row: { achievementId: any; studentId: any; achievementDate: any; description: any; }) => {
             return {
@@ -107,6 +117,19 @@ const Info = () => {
             }
         })
         setRows(data);
+    }
+
+    const getAchievementById = async (id: string) => {
+        const res = await axios.get(`${backend}/api/Achievement/${id}`);
+        const row = res.data;
+        setCurrent_ach({
+            achievement_id: row.achievementId,
+            student_id: row.studentId,
+            achievement_date: row.achievementDate,
+            description: row.description,
+            edit_ach: "",
+            delete_ach: ""
+        })
     }
     const [add, setAdd] = useState(false);
     const handleAdd = () => {
@@ -141,7 +164,6 @@ const Info = () => {
 
     const readDate = (date:Date) => {
         const mydate = new Date(date);
-        console.log(mydate);
         return mydate;
     }
     const updateAchievement = async () => {
@@ -153,7 +175,8 @@ const Info = () => {
         }
         console.log(data);
         const res = await axios.put(`${backend}/api/Achievement/${arcid}`, data);
-        if (res.status == 200) {
+        if (res.status == 204) {
+            await getAchievements();
             setUpdate(false);
         }
     }
@@ -169,22 +192,25 @@ const Info = () => {
 
         const res = await axios.post(`${backend}/api/Achievement`, data);
 
-        if (res.status == 200) {
+        if (res.status == 201) {
+            await getAchievements();
             setAdd(false);
         }
     }
 
-    const deteleAchievement = async () => {
-        const res = await axios.delete(`${backend}/api/Achievement/${arcid}`);
-        if (res.status == 200) {
+    const deleteAchievement = async (id) => {
+        let confirmResult = window.confirm("Are you sure you want to delete this achievement?");
+        if (!confirmResult) return;
+        const res = await axios.delete(`${backend}/api/Achievement/${id}`);
+        if (res.status == 204) {
+            await getAchievements();
             console.log("deleted");
         }
     }
 
     React.useEffect(() => {
         getStudent();
-        getAchievement();
-        setArcid("10000"); //for atawana paramarthaya
+        getAchievements();
     }, [])
 
     return (
@@ -235,7 +261,7 @@ const Info = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <Typography variant="h4" component="div" gutterBottom>
-                            Student Achivements
+                            Student Achievements
                         </Typography>
                     </Grid>
                     <Grid item xs={12}>
@@ -262,18 +288,20 @@ const Info = () => {
                                             <TableCell align="right">{readDate(row.achievement_date).toDateString()}</TableCell>
                                             <TableCell align="right">{row.description}</TableCell>
                                             <TableCell align="right" onClick={
-                                                (e) => {
+                                                async (e) => {
+                                                    await getAchievementById(row.achievement_id.toString());
                                                     setUpdate(true);
                                                     setArcid(row.achievement_id.toString());
+                                                    
                                                 }
 
                                             }>{row.edit_ach}</TableCell>
                                             <TableCell align="right" onClick={
-                                                (e) => {
+                                                async (e) => {
                                                     //pass id and delete the particular achivement
 
                                                     setArcid(row.achievement_id.toString());
-                                                    deteleAchievement();
+                                                    await deleteAchievement(row.achievement_id.toString());
 
                                                 }
                                                 }
@@ -321,7 +349,6 @@ const Info = () => {
                                         id="date"
                                         label="Achievement Date"
                                         type="date"
-                                        defaultValue="2017-05-24"
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
@@ -365,6 +392,7 @@ const Info = () => {
                                 <TextField
                                     id="outlined-multiline-static"
                                     label="Description"
+                                    value={current_ach.description}
                                     multiline
                                     rows={4}
                                     defaultValue=""
@@ -377,8 +405,8 @@ const Info = () => {
                                 <TextField
                                     id="date"
                                     label="Achievement Date"
+                                    value={getDatestring(current_ach.achievement_date)}
                                     type="date"
-                                    defaultValue="2017-05-24"
                                     InputLabelProps={{
                                         shrink: true,
                                     }}

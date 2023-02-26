@@ -27,8 +27,9 @@ interface Column {
 }
 const getDatestring = (data: any) => {
     try {
+        if (data == null) return null;
         const date = new Date(data);
-        return date.toISOString().split('T')[0];
+        return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
 
     } catch (error) {
         return null
@@ -43,7 +44,7 @@ interface Student {
     address: string;
     dob: Date;
     admission_date: Date;
-    graduation_date: Date;
+    graduation_date: Date | null;
     current_grade: string;
     guardian_name: string;
     guardian_contact: string;
@@ -76,7 +77,7 @@ function createStudentData(
     address: string,
     dob: Date,
     admission_date: Date,
-    graduation_date: Date,
+    graduation_date: Date | null,
     current_grade: string,
     guardian_name: string,
     guardian_contact: string,
@@ -126,21 +127,21 @@ const Students = () => {
         guardian_name: '',
         guardian_contact: '',
         admission_date: new Date(),
-        graduation_date: new Date(),
+        graduation_date: null,
         current_grade: '',
     })
     //random integer here ,
     const [newStudent, setNewStudent] = useState({
         student_id: Math.floor(Math.random() * 1000000000).toString(),
         student_name: '',
-        gender: 'female',
+        gender: 'Male',
         contact_number: '',
         address: '',
         dob: new Date(),
         guardian_name: '',
         guardian_contact: '',
         admission_date: new Date(),
-        graduation_date: new Date(),
+        graduation_date: null,
         current_grade: '',
         showErr: false,
     })
@@ -191,8 +192,12 @@ const Students = () => {
         setselectedStudent({ ...selectedStudent, admission_date: date })
     };
     const handleGradDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const date: Date = new Date(event.target.value);
-        setselectedStudent({ ...selectedStudent, graduation_date: date })
+        if(event.target.value === ''){
+            setselectedStudent({ ...selectedStudent, graduation_date: null })
+        } else {
+            const date: Date = new Date(event.target.value);
+            setselectedStudent({ ...selectedStudent, graduation_date: date })
+        }
     };
     const calculateAge = (birthday: Date) => { // birthday is a date
         const bday = new Date(birthday)
@@ -253,17 +258,26 @@ const Students = () => {
                 }, 3000);
             }
             else {
+                let tempDob = new Date(selectedStudent.dob)
+                let updatedDob = new Date(tempDob.getTime() - (tempDob.getTimezoneOffset() * 60000)).toISOString()
+                let tempAdm = new Date(selectedStudent.admission_date)
+                let updatedAdm = new Date(tempAdm.getTime() - (tempAdm.getTimezoneOffset() * 60000)).toISOString()
+                let updatedGrad = null;
+                if(selectedStudent.graduation_date){
+                    let tempGrad = new Date(selectedStudent.graduation_date);
+                    updatedGrad = new Date(tempGrad.getTime() - (tempGrad.getTimezoneOffset() * 60000)).toISOString();
+                }
                 const datat = {
                     "studentId": selectedStudent.student_id,
                     "studentName": selectedStudent.student_name,
                     "gender": selectedStudent.gender,
                     "contactNumber": selectedStudent.contact_number,
                     "address": selectedStudent.address,
-                    "dob": selectedStudent.dob,
+                    "dob": updatedDob,
                     "guardianName": selectedStudent.guardian_name,
                     "guardianContact": selectedStudent.guardian_contact,
-                    "admissionDate": selectedStudent.admission_date,
-                    "graduationDate": selectedStudent.graduation_date,
+                    "admissionDate": updatedAdm,
+                    "graduationDate": updatedGrad,
                     "currentGrade": selectedStudent.current_grade,
                     // "student": selectedStudent
                 }
@@ -284,6 +298,7 @@ const Students = () => {
                 //     }
                 // })
                 alert('Data submitted successfully');
+                getStudents()
                 seteditModalOpen(false)
             }
         } catch (error) {
@@ -334,20 +349,21 @@ const Students = () => {
                 gender: newStudent.gender,
                 contactNumber: newStudent.contact_number,
                 address: newStudent.address,
-                dob: newStudent.dob.toISOString,
+                dob: newStudent.dob.toISOString(),
                 guardianName: newStudent.guardian_name,
                 guardianContact: newStudent.guardian_contact,
-                admissionDate: newStudent.admission_date.toISOString,
-                graduationDate: newStudent.graduation_date.toISOString,
+                admissionDate: newStudent.admission_date.toISOString(),
+                graduationDate: newStudent.graduation_date? newStudent.graduation_date.toISOString(): null,
                 currentGrade: newStudent.current_grade,
             }
             console.log(tempstudent)
             console.log(tempstudent.dob.toString())
             console.log(tempstudent.admissionDate)
 
-            axios.post(backend + '/api/students', tempstudent).then((res) => {
+            axios.post(backend + '/api/students', tempstudent).then(async (res) => {
                 console.log(res);
-                getStudents();
+                await getStudents();
+                handleClose();
             }).catch((err) => {
                 console.log(err);
             })
@@ -369,7 +385,7 @@ const Students = () => {
                 guardian_name: student.guardianName,
                 guardian_contact: student.guardianContact,
                 admission_date: Date.parse(student.admissionDate),
-                graduation_date: Date.parse(student.graduationDate),
+                graduation_date: student.graduationDate? Date.parse(student.graduationDate) : null,
                 current_grade: student.currentGrade,
             };
         })
@@ -392,15 +408,15 @@ const Students = () => {
                 <Grid container /* spacing={1} */>
                     {rows.map((row, index) => {
                         return (
-                            <Grid xs={4} p={1} key={index}>
+                            <Grid item xs={4} p={1} key={index}>
                                 <Card className={styles.card} sx={{ textAlign: 'center' }}>
                                     <h2>{row.student_name}</h2>
                                     <Box sx={{ display: "flex", justifyContent: 'center' }}>
-                                        <Avatar sx={{ width: 70, height: 70 }} alt={"Student Name"} src="/static/images/avatar/1.jpg" />
+                                        <Avatar sx={{ width: 70, height: 70 }} alt={row.student_name || 'Student Name'} src="/static/images/avatar/1.jpg" />
                                     </Box>
                                     <p>{row.contact_number}</p>
                                     <p>{row.gender}</p>
-                                    <p>{calculateAge(row.dob)}</p>
+                                    <p>{"Age : " + calculateAge(row.dob)}</p>
                                     <p>{"Grade : " + row.current_grade}</p>
                                     <Box sx={{ '& > :not(style)': { m: 1 } }} mb={2} >
                                         <Link href={`students/info?id=${row.student_id}`}>
@@ -420,7 +436,7 @@ const Students = () => {
                                                 address: row.address,
                                                 dob: row.dob,
                                                 admission_date: row.admission_date,
-                                                graduation_date: row.graduation_date,
+                                                graduation_date: row.graduation_date || null,
                                                 current_grade: row.current_grade,
                                                 guardian_name: row.guardian_name,
                                                 guardian_contact: row.guardian_contact,
@@ -513,13 +529,13 @@ const Students = () => {
                                     <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
                                     <RadioGroup
                                         aria-labelledby="demo-radio-buttons-group-label"
-                                        defaultValue="female"
+                                        defaultValue="Male"
                                         name="radio-buttons-group"
 
                                         onChange={(e) => { setNewStudent({ ...newStudent, gender: e.target.value }) }}
                                     >
-                                        <FormControlLabel value="female" control={<Radio />} label="Female" />
-                                        <FormControlLabel value="male" control={<Radio />} label="Male" />
+                                        <FormControlLabel value="Male" control={<Radio />} label="Male" />
+                                        <FormControlLabel value="Female" control={<Radio />} label="Female" />
                                     </RadioGroup>
                                 </FormControl>
                                 {alertVisible &&
@@ -553,7 +569,7 @@ const Students = () => {
                             <Grid item md={4}>
 
                             </Grid>
-                            <Grid item md={12}><p>Acedemic Information</p></Grid>
+                            <Grid item md={12}><p>Academic Information</p></Grid>
                             <Grid item md={8}>
                                 <TextField
                                     sx={{ mr: 2, mb: 1, width: '80%' }}
