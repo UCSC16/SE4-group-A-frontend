@@ -198,7 +198,7 @@ const Info = () => {
         }
     }
 
-    const deleteAchievement = async (id) => {
+    const deleteAchievement = async (id: string) => {
         let confirmResult = window.confirm("Are you sure you want to delete this achievement?");
         if (!confirmResult) return;
         const res = await axios.delete(`${backend}/api/Achievement/${id}`);
