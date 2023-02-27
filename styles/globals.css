@@ -7,7 +7,7 @@ body {
     background-size: cover;
     background-color: #4e4e4e !important;
     background-blend-mode: screen;
-    background-image: url("../assets/imgs/4855400.jpg");
+    background-image: url("/4855400.jpg");
     min-height: 97vh;
 }
 a {
